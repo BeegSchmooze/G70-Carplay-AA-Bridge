@@ -1,0 +1,95 @@
+# Leafia Plus — Genesis G70 Bridge
+
+Wireless Android Auto, wireless CarPlay and Android Auto turn-by-turn on the
+cluster/HUD for the **2022 Genesis G70** head unit, as a reversible
+[NEMESIS](https://github.com/xwtk/hmg_nemesis) package. It builds on
+[HMG Leafia Plus](https://github.com/VysseCodes/HMG-Leafia-Plus), which had no
+patch set for this car's firmware, so every patch here was ported to it.
+
+> Unofficial. Not affiliated with Hyundai, Kia, Genesis, Google, Apple, the
+> NEMESIS project or HMG Leafia Plus. You use it at your own risk.
+
+## Status (release v0.9 = "update 9")
+
+| Feature | State |
+|---|---|
+| Wireless Android Auto | Works |
+| Wireless CarPlay (Bluetooth iAP2 bridge, Wi-Fi session, audio, volume) | Works |
+| Android Auto turn-by-turn on the cluster and HUD | Works: arrow and distance to the next turn, shown within about a mile of it |
+| Car navigation's own turn frames muted while the phone guides | Works; its speed-camera / trap frames still pass |
+| CarPlay turn-by-turn on the cluster | **Not yet**: the car drops the iPhone's Bluetooth iAP2 link when CarPlay moves to Wi-Fi, so route guidance has no channel |
+| Street name above the arrow on the HUD (Android Auto) | **Not yet** |
+| First instruction from a standstill | Shows "straight" for Google's "head toward …" step until the first real turn |
+| Distance count-down | Follows the phone's updates (about once a second), so it can trail the car slightly |
+
+Work on the open items continues; see [docs/TECHNICAL.md](docs/TECHNICAL.md).
+
+## Requirements
+
+- Genesis G70 2022, head unit firmware **`IKFL.USA.0000.V014.011.251120`**
+  (the installer refuses anything else).
+- NEMESIS 1.15 or newer on the head unit.
+- HMG Leafia Plus **`wireless.carplay.aa`** installed first (basic mode is
+  enough): it provides the wireless feature flags and the hotspot.
+- A FAT32 USB drive.
+
+## Install
+
+1. Download the release zip (`G70-Bridge-v0.9.zip`) and unzip it onto the root
+   of the USB drive. You should have `NEMESIS.data` and
+   `packages/g70.carplay.bt.zip` at the top level. Do not unzip
+   `g70.carplay.bt.zip` itself.
+2. Plug the drive into the car with the head unit on.
+3. If an earlier build of this package is installed, NEMESIS first offers
+   **uninstall**: accept it. Then accept **install**.
+4. The head unit restarts. The first start after an install can take a few
+   minutes, and Bluetooth may show "initializing" for a while; that is the apps
+   being optimised once.
+
+## Uninstall
+
+NEMESIS Manager → Packages → `g70.carplay.bt` → Uninstall, then restart the head
+unit. Every changed file, property and library goes back to stock byte for byte.
+
+## How it is built
+
+Nothing modified from Hyundai, Google or Apple is shipped. The package carries
+only patch deltas (`package/files/*.lpd`). During install, Leafia's `lpatch`
+rebuilds each app on the head unit from that unit's own stock files: it refuses
+unless the stock `.odex` is exactly the expected original, and the rebuilt APK
+must match the tested build's checksum. Native libraries are patched the same
+way. The changes themselves are in [`src/patches/`](src/patches) as smali
+diffs against the stock apps.
+
+| Part | Change |
+|---|---|
+| `HKMC_DiPO` (CarPlay) | Bluetooth→iAP2 bridge, starts the CarPlay engine for wireless, audio source and focus, turn-by-turn gate opened |
+| `Iap2ServerApp` | Starts/ends the iAP2 session on the Bluetooth transport; advertises route guidance |
+| `HKMC_GPM` (Android Auto) | Stuck-session and USB-drive fixes; turn-by-turn manager enabled on this firmware; filters and units for the navigation bridge; near-turn window |
+| `HKMC_Navi_ExSL` (car navigation) | Skips its turn frames while the phone guides |
+| `libautoreceiver_infobank.so` | Leafia/NEMESIS `projection.tbt` navigation bridge, ported to this car's library build |
+| `libCarPlayCore.so` | Leafia recipe: accept Wi-Fi CarPlay sessions |
+| Leafia audio part | Unchanged (`package/comp/4_audio`) |
+
+## Repository layout
+
+```
+package/          the NEMESIS package source (zip its contents to make g70.carplay.bt.zip)
+src/patches/      smali diffs: stock app -> this build (new classes included)
+tools/aa-lib-port library port scripts (see docs/TECHNICAL.md)
+tools/checks/     reference/register checkers and the mock head-unit tests
+tools/probe/      read-only diagnostic probe (NEMESIS execute script)
+docs/             technical notes
+```
+
+## Diagnostics
+
+`tools/probe` is a read-only NEMESIS script that writes logs to the USB drive.
+Its output contains your phone names, Bluetooth addresses and vehicle data:
+**don't post it publicly**.
+
+## Licence and credits
+
+GPL-3.0 (see `LICENSE`), with parts under AGPL-3.0; see [NOTICE.md](NOTICE.md).
+Built on HMG Leafia Plus by VysseCodes and contributors, and on NEMESIS and
+its community packages by xwtk and contributors.

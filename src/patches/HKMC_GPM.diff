@@ -1,0 +1,876 @@
+diff -ruN -I '^ *#' HKMC_GPM.stock/com/google/android/projection/protocol/NavigationStatus.smali HKMC_GPM.new/com/google/android/projection/protocol/NavigationStatus.smali
+--- HKMC_GPM.stock/com/google/android/projection/protocol/NavigationStatus.smali	2026-11-01 02:53:49.698718500 +0000
++++ HKMC_GPM.new/com/google/android/projection/protocol/NavigationStatus.smali	2026-11-01 02:53:51.569847600 +0000
+@@ -81,6 +81,13 @@
+ .method public navigationNextTurnCallback(Ljava/lang/String;II[BII)V
+     .registers 14
+ 
++    const/16 v0, 0x20
++
++    if-lt p3, v0, :cond_5
++
++    return-void
++
++    :cond_5
+     iget-object v0, p0, Lcom/google/android/projection/protocol/NavigationStatus;->mListener:Lcom/google/android/projection/protocol/NavigationStatus$NavigationStatusListener;
+ 
+     move-object v1, p1
+@@ -103,6 +110,15 @@
+ .method public navigationNextTurnDistanceCallback(IIII)V
+     .registers 6
+ 
++    and-int/lit16 v0, p4, 0x300
++
++    if-eqz v0, :cond_5
++
++    return-void
++
++    :cond_5
++    invoke-static {p1}, Lcom/google/android/projection/sink/navigation/LeafiaTbtMark;->setStep(I)V
++
+     iget-object v0, p0, Lcom/google/android/projection/protocol/NavigationStatus;->mListener:Lcom/google/android/projection/protocol/NavigationStatus$NavigationStatusListener;
+ 
+     invoke-interface {v0, p1, p2, p3, p4}, Lcom/google/android/projection/protocol/NavigationStatus$NavigationStatusListener;->onNextTurnDistance(IIII)V
+diff -ruN -I '^ *#' HKMC_GPM.stock/com/google/android/projection/service/GalConnectionManager.smali HKMC_GPM.new/com/google/android/projection/service/GalConnectionManager.smali
+--- HKMC_GPM.stock/com/google/android/projection/service/GalConnectionManager.smali	2026-11-01 02:53:49.757324000 +0000
++++ HKMC_GPM.new/com/google/android/projection/service/GalConnectionManager.smali	2026-11-01 02:53:51.627786900 +0000
+@@ -1273,8 +1273,27 @@
+     :cond_13
+     iget v0, p0, Lcom/google/android/projection/service/GalConnectionManager;->mStartMode:I
+ 
+-    if-eqz v0, :cond_3c
++    if-eqz v0, :cond_4d
+ 
++    const/4 v1, 0x2
++
++    if-ne v0, v1, :cond_28
++
++    if-ne p1, v1, :cond_28
++
++    iget-object v1, p0, Lcom/google/android/projection/service/GalConnectionManager;->mWirelessSession:Lcom/google/android/projection/service/GalConnectionSession;
++
++    if-nez v1, :cond_28
++
++    sget-object v0, Lcom/google/android/projection/service/GalConnectionManager;->TAG:Ljava/lang/String;
++
++    const-string v1, "Leafia: wireless start mode left without a session, starting a new one"
++
++    invoke-static {v0, v1}, Lcom/google/android/projection/sink/c/k;->i(Ljava/lang/String;Ljava/lang/String;)V
++
++    goto :goto_65
++
++    :cond_28
+     sget-object v0, Lcom/google/android/projection/service/GalConnectionManager;->TAG:Ljava/lang/String;
+ 
+     new-instance v1, Ljava/lang/StringBuilder;
+@@ -1311,10 +1330,10 @@
+ 
+     goto :goto_12
+ 
+-    :cond_3c
++    :cond_4d
+     const/4 v0, 0x1
+ 
+-    if-ne p1, v0, :cond_54
++    if-ne p1, v0, :cond_65
+ 
+     iput p1, p0, Lcom/google/android/projection/service/GalConnectionManager;->mStartMode:I
+ 
+@@ -1340,10 +1359,11 @@
+ 
+     goto :goto_12
+ 
+-    :cond_54
++    :cond_65
++    :goto_65
+     const/4 v0, 0x2
+ 
+-    if-ne p1, v0, :cond_6a
++    if-ne p1, v0, :cond_7b
+ 
+     iget-object v0, p0, Lcom/google/android/projection/service/GalConnectionManager;->mWirelessSession:Lcom/google/android/projection/service/GalConnectionSession;
+ 
+@@ -1367,7 +1387,7 @@
+ 
+     goto :goto_12
+ 
+-    :cond_6a
++    :cond_7b
+     sget-object v0, Lcom/google/android/projection/service/GalConnectionManager;->TAG:Ljava/lang/String;
+ 
+     const-string v1, "startMode is invalid!"
+diff -ruN -I '^ *#' HKMC_GPM.stock/com/google/android/projection/service/GalConnectionSession.smali HKMC_GPM.new/com/google/android/projection/service/GalConnectionSession.smali
+--- HKMC_GPM.stock/com/google/android/projection/service/GalConnectionSession.smali	2026-11-01 02:53:49.807190900 +0000
++++ HKMC_GPM.new/com/google/android/projection/service/GalConnectionSession.smali	2026-11-01 02:53:51.670486100 +0000
+@@ -311,8 +311,6 @@
+ 
+     const/16 v3, 0x3e7
+ 
+-    if-lt v0, v3, :cond_ee
+-
+     new-instance v0, Lcom/google/android/projection/sink/navigation/GpmNaviTBTManager;
+ 
+     iget-object v3, p0, Lcom/google/android/projection/service/GalConnectionSession;->mContext:Landroid/content/Context;
+@@ -321,18 +319,17 @@
+ 
+     iput-object v0, p0, Lcom/google/android/projection/service/GalConnectionSession;->mGpmNaviTBTManager:Lcom/google/android/projection/sink/navigation/GpmNaviTBTManager;
+ 
+-    :cond_ee
+     iget-object v3, p0, Lcom/google/android/projection/service/GalConnectionSession;->mService:Lcom/google/android/projection/service/GalReceiverService;
+ 
+     invoke-static {}, Lcom/google/android/projection/sink/d/d;->bv()Z
+ 
+     move-result v0
+ 
+-    if-eqz v0, :cond_106
++    if-eqz v0, :cond_104
+ 
+     move v0, v1
+ 
+-    :goto_f7
++    :goto_f5
+     invoke-virtual {v3, v0}, Lcom/google/android/projection/service/GalReceiverService;->setTouchXScale(F)V
+ 
+     iget-object v0, p0, Lcom/google/android/projection/service/GalConnectionSession;->mService:Lcom/google/android/projection/service/GalReceiverService;
+@@ -341,22 +338,22 @@
+ 
+     move-result v3
+ 
+-    if-eqz v3, :cond_108
++    if-eqz v3, :cond_106
+ 
+-    :goto_102
++    :goto_100
+     invoke-virtual {v0, v1}, Lcom/google/android/projection/service/GalReceiverService;->setTouchYScale(F)V
+ 
+     return-void
+ 
+-    :cond_106
++    :cond_104
+     move v0, v2
+ 
+-    goto :goto_f7
++    goto :goto_f5
+ 
+-    :cond_108
++    :cond_106
+     move v1, v2
+ 
+-    goto :goto_102
++    goto :goto_100
+ .end method
+ 
+ .method static synthetic access$000()Ljava/lang/String;
+diff -ruN -I '^ *#' HKMC_GPM.stock/com/google/android/projection/service/StartReceiver.smali HKMC_GPM.new/com/google/android/projection/service/StartReceiver.smali
+--- HKMC_GPM.stock/com/google/android/projection/service/StartReceiver.smali	2026-11-01 02:53:49.862940000 +0000
++++ HKMC_GPM.new/com/google/android/projection/service/StartReceiver.smali	2026-11-01 02:53:51.723123900 +0000
+@@ -29,6 +29,58 @@
+     return-void
+ .end method
+ 
++.method private static leafiaNotPhone(Landroid/hardware/usb/UsbDevice;)Z
++    .registers 5
++
++    if-eqz p0, :cond_20
++
++    :try_start_2
++    invoke-virtual {p0}, Landroid/hardware/usb/UsbDevice;->getInterfaceCount()I
++
++    move-result v0
++
++    if-lez v0, :cond_20
++
++    const/4 v1, 0x0
++
++    :goto_9
++    if-ge v1, v0, :cond_1e
++
++    invoke-virtual {p0, v1}, Landroid/hardware/usb/UsbDevice;->getInterface(I)Landroid/hardware/usb/UsbInterface;
++
++    move-result-object v2
++
++    invoke-virtual {v2}, Landroid/hardware/usb/UsbInterface;->getInterfaceClass()I
++
++    move-result v2
++
++    const/16 v3, 0x8
++
++    if-eq v2, v3, :cond_1b
++
++    const/16 v3, 0x9
++
++    if-ne v2, v3, :cond_20
++
++    :cond_1b
++    add-int/lit8 v1, v1, 0x1
++
++    goto :goto_9
++    :try_end_1e
++    .catch Ljava/lang/Throwable; {:try_start_2 .. :try_end_1e} :catch_20
++
++    :cond_1e
++    const/4 v0, 0x1
++
++    return v0
++
++    :catch_20
++    :cond_20
++    const/4 v0, 0x0
++
++    return v0
++.end method
++
+ 
+ # virtual methods
+ .method public onReceive(Landroid/content/Context;Landroid/content/Intent;)V
+@@ -107,7 +159,7 @@
+ 
+     move-result v0
+ 
+-    if-eqz v0, :cond_e0
++    if-eqz v0, :cond_ee
+ 
+     sget-object v0, Lcom/google/android/projection/service/StartReceiver;->TAG:Ljava/lang/String;
+ 
+@@ -175,7 +227,7 @@
+ 
+     const/4 v2, 0x7
+ 
+-    if-ne v0, v2, :cond_d5
++    if-ne v0, v2, :cond_e3
+ 
+     :cond_8d
+     invoke-static {}, Lcom/google/android/projection/sink/d/d;->br()Lcom/google/android/projection/sink/d/d;
+@@ -211,7 +263,7 @@
+ 
+     move-result v0
+ 
+-    if-eqz v0, :cond_cc
++    if-eqz v0, :cond_da
+ 
+     const-string v0, "device"
+ 
+@@ -221,6 +273,21 @@
+ 
+     check-cast v0, Landroid/hardware/usb/UsbDevice;
+ 
++    invoke-static {v0}, Lcom/google/android/projection/service/StartReceiver;->leafiaNotPhone(Landroid/hardware/usb/UsbDevice;)Z
++
++    move-result v3
++
++    if-eqz v3, :cond_c4
++
++    sget-object v3, Lcom/google/android/projection/service/StartReceiver;->TAG:Ljava/lang/String;
++
++    const-string v4, "Leafia: USB drive or hub, not starting wired Android Auto"
++
++    invoke-static {v3, v4}, Lcom/google/android/projection/sink/c/k;->i(Ljava/lang/String;Ljava/lang/String;)V
++
++    goto :goto_94
++
++    :cond_c4
+     new-instance v3, Landroid/content/Intent;
+ 
+     const-class v4, Lcom/google/android/projection/service/GalReceiverService;
+@@ -239,7 +306,7 @@
+ 
+     goto/16 :goto_30
+ 
+-    :cond_cc
++    :cond_da
+     sget-object v0, Lcom/google/android/projection/service/StartReceiver;->TAG:Ljava/lang/String;
+ 
+     const-string v3, "USB_DEVICE_ATTACHED, but AndroidAuto Settings value is false! not Start AA Service"
+@@ -248,7 +315,7 @@
+ 
+     goto/16 :goto_30
+ 
+-    :cond_d5
++    :cond_e3
+     const/4 v2, 0x3
+ 
+     if-ne v0, v2, :cond_94
+@@ -261,14 +328,14 @@
+ 
+     goto :goto_94
+ 
+-    :cond_e0
++    :cond_ee
+     const-string v0, "com.hkmc.intent.action.VALET_ON"
+ 
+     invoke-virtual {v2, v0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+ 
+     move-result v0
+ 
+-    if-eqz v0, :cond_f7
++    if-eqz v0, :cond_105
+ 
+     invoke-static {}, Lcom/google/android/projection/sink/d/d;->br()Lcom/google/android/projection/sink/d/d;
+ 
+@@ -284,14 +351,14 @@
+ 
+     goto :goto_94
+ 
+-    :cond_f7
++    :cond_105
+     const-string v0, "com.hkmc.intent.action.VALET_OFF"
+ 
+     invoke-virtual {v2, v0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+ 
+     move-result v0
+ 
+-    if-eqz v0, :cond_10e
++    if-eqz v0, :cond_11d
+ 
+     invoke-static {}, Lcom/google/android/projection/sink/d/d;->br()Lcom/google/android/projection/sink/d/d;
+ 
+@@ -305,16 +372,16 @@
+ 
+     invoke-static {v0, v1}, Lcom/google/android/projection/sink/c/k;->v(Ljava/lang/String;Ljava/lang/String;)V
+ 
+-    goto :goto_94
++    goto/16 :goto_94
+ 
+-    :cond_10e
++    :cond_11d
+     const-string v0, "com.mobis.user_profile.intent.action.CHECK_RUN_FRS"
+ 
+     invoke-virtual {v2, v0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+ 
+     move-result v0
+ 
+-    if-eqz v0, :cond_13f
++    if-eqz v0, :cond_14e
+ 
+     invoke-static {}, Lcom/google/android/projection/sink/d/d;->br()Lcom/google/android/projection/sink/d/d;
+ 
+@@ -354,14 +421,14 @@
+ 
+     goto/16 :goto_94
+ 
+-    :cond_13f
++    :cond_14e
+     const-string v0, "com.android.settings.ACTION_SYSTEM_DEFAULT_ALL_USER"
+ 
+     invoke-virtual {v2, v0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+ 
+     move-result v0
+ 
+-    if-eqz v0, :cond_153
++    if-eqz v0, :cond_162
+ 
+     invoke-static {p1}, Lcom/google/android/projection/sink/d/d;->c(Landroid/content/Context;)V
+ 
+@@ -373,14 +440,14 @@
+ 
+     goto/16 :goto_94
+ 
+-    :cond_153
++    :cond_162
+     const-string v0, "com.hkmc.mobis.action.HOME_BLOCK"
+ 
+     invoke-virtual {v2, v0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+ 
+     move-result v0
+ 
+-    if-eqz v0, :cond_184
++    if-eqz v0, :cond_193
+ 
+     invoke-static {}, Lcom/google/android/projection/sink/d/d;->br()Lcom/google/android/projection/sink/d/d;
+ 
+@@ -420,14 +487,14 @@
+ 
+     goto/16 :goto_94
+ 
+-    :cond_184
++    :cond_193
+     const-string v0, "com.mobis.intent.action.navi_keyboard_show"
+ 
+     invoke-virtual {v2, v0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+ 
+     move-result v0
+ 
+-    if-eqz v0, :cond_1bb
++    if-eqz v0, :cond_1ca
+ 
+     invoke-static {}, Lcom/google/android/projection/sink/d/d;->dA()Z
+ 
+@@ -473,14 +540,14 @@
+ 
+     goto/16 :goto_94
+ 
+-    :cond_1bb
++    :cond_1ca
+     const-string v0, "com.mobis.intent.action.navi_keyboard_hide"
+ 
+     invoke-virtual {v2, v0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+ 
+     move-result v0
+ 
+-    if-eqz v0, :cond_1f2
++    if-eqz v0, :cond_201
+ 
+     invoke-static {}, Lcom/google/android/projection/sink/d/d;->dA()Z
+ 
+@@ -526,14 +593,14 @@
+ 
+     goto/16 :goto_94
+ 
+-    :cond_1f2
++    :cond_201
+     const-string v0, "com.android.inputmethod.Korean.action.showwindow"
+ 
+     invoke-virtual {v2, v0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+ 
+     move-result v0
+ 
+-    if-eqz v0, :cond_22b
++    if-eqz v0, :cond_23a
+ 
+     const-string v0, "SettingSearch"
+ 
+@@ -581,7 +648,7 @@
+ 
+     goto/16 :goto_94
+ 
+-    :cond_22b
++    :cond_23a
+     const-string v0, "com.android.inputmethod.Korean.action.hidewindow"
+ 
+     invoke-virtual {v2, v0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
+diff -ruN -I '^ *#' HKMC_GPM.stock/com/google/android/projection/sink/navigation/GpmNaviTBTManager.smali HKMC_GPM.new/com/google/android/projection/sink/navigation/GpmNaviTBTManager.smali
+--- HKMC_GPM.stock/com/google/android/projection/sink/navigation/GpmNaviTBTManager.smali	2026-11-01 02:53:50.106497900 +0000
++++ HKMC_GPM.new/com/google/android/projection/sink/navigation/GpmNaviTBTManager.smali	2026-11-01 02:53:51.909765900 +0000
+@@ -198,6 +198,8 @@
+ .method private clearMessage()V
+     .registers 3
+ 
++    invoke-static {}, Lcom/google/android/projection/sink/navigation/LeafiaTbtMark;->clear()V
++
+     const/4 v1, 0x0
+ 
+     iput v1, p0, Lcom/google/android/projection/sink/navigation/GpmNaviTBTManager;->mEvent:I
+@@ -1192,6 +1194,15 @@
+ .method private updateTBTInfo()V
+     .registers 11
+ 
++    invoke-static {}, Lcom/google/android/projection/sink/navigation/LeafiaTbtMark;->isFar()Z
++
++    move-result v0
++
++    if-eqz v0, :cond_9
++
++    invoke-direct {p0}, Lcom/google/android/projection/sink/navigation/GpmNaviTBTManager;->setUnknownDisplayType()V
++
++    :cond_9
+     const v2, 0xffff
+ 
+     const/4 v5, 0x0
+@@ -1208,7 +1219,7 @@
+ 
+     cmpg-float v0, v0, v1
+ 
+-    if-gez v0, :cond_d4
++    if-gez v0, :cond_e0
+ 
+     const/16 v8, 0xfe
+ 
+@@ -1218,21 +1229,21 @@
+ 
+     iput v0, p0, Lcom/google/android/projection/sink/navigation/GpmNaviTBTManager;->mDisplayType:I
+ 
+-    :goto_16
++    :goto_1f
+     iget v0, p0, Lcom/google/android/projection/sink/navigation/GpmNaviTBTManager;->mTurnAngle:I
+ 
+-    if-gez v0, :cond_1d
++    if-gez v0, :cond_26
+ 
+     iget v0, p0, Lcom/google/android/projection/sink/navigation/GpmNaviTBTManager;->mDirection:I
+ 
+     int-to-float v3, v0
+ 
+-    :cond_1d
++    :cond_26
+     invoke-static {}, Lcom/google/android/projection/sink/c/k;->isNaviDebugMode()Z
+ 
+     move-result v0
+ 
+-    if-eqz v0, :cond_c3
++    if-eqz v0, :cond_cc
+ 
+     const-string v0, "TBT_Test"
+ 
+@@ -1388,10 +1399,10 @@
+ 
+     invoke-static {v0, v1}, Lcom/google/android/projection/sink/c/k;->d(Ljava/lang/String;Ljava/lang/String;)V
+ 
+-    :cond_c3
++    :cond_cc
+     iget-object v0, p0, Lcom/google/android/projection/sink/navigation/GpmNaviTBTManager;->mClusterService:Lcom/hkmc/cluster/NavigationCluster;
+ 
+-    if-eqz v0, :cond_d3
++    if-eqz v0, :cond_df
+ 
+     iget-object v0, p0, Lcom/google/android/projection/sink/navigation/GpmNaviTBTManager;->mClusterService:Lcom/hkmc/cluster/NavigationCluster;
+ 
+@@ -1403,20 +1414,31 @@
+ 
+     move v6, v5
+ 
++    invoke-static {}, Lcom/google/android/projection/sink/navigation/LeafiaTbtMark;->mark()V
++
+     invoke-virtual/range {v0 .. v9}, Lcom/hkmc/cluster/NavigationCluster;->updateTBTInfo(IIFFIIIII)V
+ 
+-    :cond_d3
++    :cond_df
+     return-void
+ 
+-    :cond_d4
++    :cond_e0
+     move v9, v5
+ 
+-    goto/16 :goto_16
++    goto/16 :goto_1f
+ .end method
+ 
+ .method private updateTBTSubInfo()V
+     .registers 11
+ 
++    invoke-static {}, Lcom/google/android/projection/sink/navigation/LeafiaTbtMark;->isFar()Z
++
++    move-result v0
++
++    if-eqz v0, :cond_7
++
++    return-void
++
++    :cond_7
+     const/4 v2, 0x0
+ 
+     const/4 v4, -0x1
+@@ -1427,7 +1449,7 @@
+ 
+     iget v0, p0, Lcom/google/android/projection/sink/navigation/GpmNaviTBTManager;->mTurnAngle:I
+ 
+-    if-gez v0, :cond_24
++    if-gez v0, :cond_2e
+ 
+     iget v0, p0, Lcom/google/android/projection/sink/navigation/GpmNaviTBTManager;->mDirection:I
+ 
+@@ -1437,14 +1459,14 @@
+ 
+     cmpl-float v0, v8, v0
+ 
+-    if-nez v0, :cond_24
++    if-nez v0, :cond_2e
+ 
+     move v9, v4
+ 
+-    :goto_13
++    :goto_1a
+     iget-object v0, p0, Lcom/google/android/projection/sink/navigation/GpmNaviTBTManager;->mClusterService:Lcom/hkmc/cluster/NavigationCluster;
+ 
+-    if-eqz v0, :cond_23
++    if-eqz v0, :cond_2d
+ 
+     iget-object v0, p0, Lcom/google/android/projection/sink/navigation/GpmNaviTBTManager;->mClusterService:Lcom/hkmc/cluster/NavigationCluster;
+ 
+@@ -1458,20 +1480,31 @@
+ 
+     move v7, v4
+ 
++    invoke-static {}, Lcom/google/android/projection/sink/navigation/LeafiaTbtMark;->mark()V
++
+     invoke-virtual/range {v0 .. v9}, Lcom/hkmc/cluster/NavigationCluster;->updateTBTSubInfo(FIIIIIIFI)V
+ 
+-    :cond_23
++    :cond_2d
+     return-void
+ 
+-    :cond_24
++    :cond_2e
+     move v9, v2
+ 
+-    goto :goto_13
++    goto :goto_1a
+ .end method
+ 
+ .method private updateTPCrossroadName(Ljava/lang/String;)V
+     .registers 4
+ 
++    invoke-static {}, Lcom/google/android/projection/sink/navigation/LeafiaTbtMark;->isFar()Z
++
++    move-result v0
++
++    if-eqz v0, :cond_8
++
++    const-string p1, ""
++
++    :cond_8
+     new-instance v0, Lcom/hkmc/cluster/NavigationCluster$CrossroadName;
+ 
+     invoke-direct {v0}, Lcom/hkmc/cluster/NavigationCluster$CrossroadName;-><init>()V
+@@ -1480,13 +1513,13 @@
+ 
+     iget-object v1, p0, Lcom/google/android/projection/sink/navigation/GpmNaviTBTManager;->mClusterService:Lcom/hkmc/cluster/NavigationCluster;
+ 
+-    if-eqz v1, :cond_10
++    if-eqz v1, :cond_18
+ 
+     iget-object v1, p0, Lcom/google/android/projection/sink/navigation/GpmNaviTBTManager;->mClusterService:Lcom/hkmc/cluster/NavigationCluster;
+ 
+     invoke-virtual {v1, v0}, Lcom/hkmc/cluster/NavigationCluster;->updateTPCrossroadName(Lcom/hkmc/cluster/NavigationCluster$CrossroadName;)V
+ 
+-    :cond_10
++    :cond_18
+     return-void
+ .end method
+ 
+@@ -1954,6 +1987,17 @@
+ .method public onStatus(I)V
+     .registers 2
+ 
++    const/4 p0, 0x1
++
++    if-eq p1, p0, :cond_9
++
++    const/4 p0, 0x3
++
++    if-eq p1, p0, :cond_9
++
++    invoke-static {}, Lcom/google/android/projection/sink/navigation/LeafiaTbtMark;->clear()V
++
++    :cond_9
+     return-void
+ .end method
+ 
+@@ -1993,91 +2037,15 @@
+ .end method
+ 
+ .method public updateOperationStatus(Z)V
+-    .registers 4
+-
+-    const/4 v1, 0x1
++    .registers 2
+ 
+     invoke-direct {p0}, Lcom/google/android/projection/sink/navigation/GpmNaviTBTManager;->clearMessage()V
+ 
+-    iget-object v0, p0, Lcom/google/android/projection/sink/navigation/GpmNaviTBTManager;->mClusterService:Lcom/hkmc/cluster/NavigationCluster;
+-
+-    if-eqz v0, :cond_12
+-
+-    if-eqz p1, :cond_13
+-
+-    invoke-virtual {p0, v1}, Lcom/google/android/projection/sink/navigation/GpmNaviTBTManager;->responseNaviAliveStatus(Z)V
+-
+-    iget-object v0, p0, Lcom/google/android/projection/sink/navigation/GpmNaviTBTManager;->mClusterService:Lcom/hkmc/cluster/NavigationCluster;
+-
+-    invoke-virtual {v0, v1}, Lcom/hkmc/cluster/NavigationCluster;->updateOperationStatus(I)V
+-
+-    :cond_12
+-    :goto_12
+     return-void
+-
+-    :cond_13
+-    const/4 v0, 0x0
+-
+-    invoke-virtual {p0, v0}, Lcom/google/android/projection/sink/navigation/GpmNaviTBTManager;->responseNaviAliveStatus(Z)V
+-
+-    iget-object v0, p0, Lcom/google/android/projection/sink/navigation/GpmNaviTBTManager;->mClusterService:Lcom/hkmc/cluster/NavigationCluster;
+-
+-    const/4 v1, 0x2
+-
+-    invoke-virtual {v0, v1}, Lcom/hkmc/cluster/NavigationCluster;->updateOperationStatus(I)V
+-
+-    goto :goto_12
+ .end method
+ 
+ .method public updateTBTTrapInfo()V
+-    .registers 20
+-
+-    move-object/from16 v0, p0
+-
+-    iget-object v1, v0, Lcom/google/android/projection/sink/navigation/GpmNaviTBTManager;->mClusterService:Lcom/hkmc/cluster/NavigationCluster;
+-
+-    if-eqz v1, :cond_27
+-
+-    move-object/from16 v0, p0
++    .registers 1
+ 
+-    iget-object v1, v0, Lcom/google/android/projection/sink/navigation/GpmNaviTBTManager;->mClusterService:Lcom/hkmc/cluster/NavigationCluster;
+-
+-    const/4 v2, -0x1
+-
+-    const/4 v3, -0x1
+-
+-    const/4 v4, 0x3
+-
+-    const/4 v5, -0x1
+-
+-    const/4 v6, 0x0
+-
+-    const/4 v7, 0x0
+-
+-    const/4 v8, 0x0
+-
+-    const/4 v9, 0x0
+-
+-    const/16 v10, 0xf
+-
+-    const v11, 0xffff
+-
+-    const/4 v12, 0x3
+-
+-    const/16 v13, 0x64
+-
+-    const/16 v14, 0xff
+-
+-    const/16 v15, 0xf
+-
+-    const/16 v16, 0x3
+-
+-    const/16 v17, 0x3
+-
+-    const/16 v18, 0xf
+-
+-    invoke-virtual/range {v1 .. v18}, Lcom/hkmc/cluster/NavigationCluster;->updateTBTTrapInfo(IIIIIIIIIIIIIIIII)V
+-
+-    :cond_27
+     return-void
+ .end method
+diff -ruN -I '^ *#' HKMC_GPM.stock/com/google/android/projection/sink/navigation/LeafiaTbtMark.smali HKMC_GPM.new/com/google/android/projection/sink/navigation/LeafiaTbtMark.smali
+--- HKMC_GPM.stock/com/google/android/projection/sink/navigation/LeafiaTbtMark.smali	1970-01-01 00:00:00.000000000 +0000
++++ HKMC_GPM.new/com/google/android/projection/sink/navigation/LeafiaTbtMark.smali	2026-11-01 02:53:51.908763800 +0000
+@@ -0,0 +1,131 @@
++.class public final Lcom/google/android/projection/sink/navigation/LeafiaTbtMark;
++.super Ljava/lang/Object;
++.source "LeafiaTbtMark.java"
++
++
++# static fields
++.field private static sLast:J
++
++.field private static volatile sStepMeters:I
++
++
++# direct methods
++.method private constructor <init>()V
++    .registers 1
++
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
++
++.method public static clear()V
++    .registers 2
++
++    :try_start_0
++    const-wide/16 v0, 0x0
++
++    sput-wide v0, Lcom/google/android/projection/sink/navigation/LeafiaTbtMark;->sLast:J
++
++    const-string v0, "sys.leafia.phonetbt"
++
++    const-string v1, "0"
++
++    invoke-static {v0, v1}, Landroid/os/SystemProperties;->set(Ljava/lang/String;Ljava/lang/String;)V
++
++    const-string v0, "LeafiaTBT"
++
++    const-string v1, "Leafia: phone guidance ended (Android Auto)"
++
++    invoke-static {v0, v1}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
++    :try_end_12
++    .catch Ljava/lang/Throwable; {:try_start_0 .. :try_end_12} :catch_12
++
++    :catch_12
++    return-void
++.end method
++
++.method public static isFar()Z
++    .registers 2
++
++    sget v0, Lcom/google/android/projection/sink/navigation/LeafiaTbtMark;->sStepMeters:I
++
++    const/16 v1, 0x649
++
++    if-le v0, v1, :cond_8
++
++    const/4 v0, 0x1
++
++    return v0
++
++    :cond_8
++    const/4 v0, 0x0
++
++    return v0
++.end method
++
++.method public static log(Ljava/lang/String;)V
++    .registers 2
++
++    :try_start_0
++    const-string v0, "LeafiaTBT"
++
++    invoke-static {v0, p0}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
++    :try_end_5
++    .catch Ljava/lang/Throwable; {:try_start_0 .. :try_end_5} :catch_5
++
++    :catch_5
++    return-void
++.end method
++
++.method public static mark()V
++    .registers 6
++
++    :try_start_0
++    invoke-static {}, Landroid/os/SystemClock;->elapsedRealtime()J
++
++    move-result-wide v0
++
++    const-wide/16 v2, 0x3e8
++
++    div-long/2addr v0, v2
++
++    sget-wide v2, Lcom/google/android/projection/sink/navigation/LeafiaTbtMark;->sLast:J
++
++    sub-long v2, v0, v2
++
++    const-wide/16 v4, 0x5
++
++    cmp-long v2, v2, v4
++
++    if-ltz v2, :cond_23
++
++    sput-wide v0, Lcom/google/android/projection/sink/navigation/LeafiaTbtMark;->sLast:J
++
++    const-string v2, "sys.leafia.phonetbt"
++
++    invoke-static {v0, v1}, Ljava/lang/String;->valueOf(J)Ljava/lang/String;
++
++    move-result-object v3
++
++    invoke-static {v2, v3}, Landroid/os/SystemProperties;->set(Ljava/lang/String;Ljava/lang/String;)V
++
++    const-string v2, "LeafiaTBT"
++
++    const-string v3, "Leafia: phone turn data going to the cluster (Android Auto)"
++
++    invoke-static {v2, v3}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
++    :try_end_23
++    .catch Ljava/lang/Throwable; {:try_start_0 .. :try_end_23} :catch_23
++
++    :catch_23
++    :cond_23
++    return-void
++.end method
++
++.method public static setStep(I)V
++    .registers 1
++
++    sput p0, Lcom/google/android/projection/sink/navigation/LeafiaTbtMark;->sStepMeters:I
++
++    return-void
++.end method

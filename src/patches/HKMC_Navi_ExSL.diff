@@ -1,0 +1,702 @@
+diff -ruN -I '^ *#' HKMC_Navi_ExSL.stock/com/mnsoft/navi/LeafiaTbtMute.smali HKMC_Navi_ExSL.new/com/mnsoft/navi/LeafiaTbtMute.smali
+--- HKMC_Navi_ExSL.stock/com/mnsoft/navi/LeafiaTbtMute.smali	1970-01-01 00:00:00.000000000 +0000
++++ HKMC_Navi_ExSL.new/com/mnsoft/navi/LeafiaTbtMute.smali	2026-11-01 02:53:58.642302900 +0000
+@@ -0,0 +1,153 @@
++.class public final Lcom/mnsoft/navi/LeafiaTbtMute;
++.super Ljava/lang/Object;
++.source "LeafiaTbtMute.java"
++
++
++# static fields
++.field private static sMuted:Z
++
++
++# direct methods
++.method private constructor <init>()V
++    .registers 1
++
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    return-void
++.end method
++
++.method public static dropClusterData(I)Z
++    .registers 2
++
++    if-eqz p0, :cond_16
++
++    const/4 v0, 0x2
++
++    if-eq p0, v0, :cond_16
++
++    const/4 v0, 0x3
++
++    if-eq p0, v0, :cond_16
++
++    const/16 v0, 0x64
++
++    if-eq p0, v0, :cond_16
++
++    const/16 v0, 0x65
++
++    if-eq p0, v0, :cond_16
++
++    const/16 v0, 0x66
++
++    if-eq p0, v0, :cond_16
++
++    const/4 v0, 0x0
++
++    return v0
++
++    :cond_16
++    invoke-static {}, Lcom/mnsoft/navi/LeafiaTbtMute;->muted()Z
++
++    move-result v0
++
++    return v0
++.end method
++
++.method public static dropFrame(I)Z
++    .registers 2
++
++    const/16 v0, 0x4c
++
++    if-eq p0, v0, :cond_e
++
++    const/16 v0, 0x4d
++
++    if-eq p0, v0, :cond_e
++
++    const/16 v0, 0x4e
++
++    if-eq p0, v0, :cond_e
++
++    const/4 v0, 0x0
++
++    return v0
++
++    :cond_e
++    invoke-static {}, Lcom/mnsoft/navi/LeafiaTbtMute;->muted()Z
++
++    move-result v0
++
++    return v0
++.end method
++
++.method public static muted()Z
++    .registers 6
++
++    :try_start_0
++    const-string v0, "sys.leafia.phonetbt"
++
++    const-wide/16 v1, 0x0
++
++    invoke-static {v0, v1, v2}, Landroid/os/SystemProperties;->getLong(Ljava/lang/String;J)J
++
++    move-result-wide v0
++
++    const/4 v5, 0x0
++
++    const-wide/16 v2, 0x0
++
++    cmp-long v4, v0, v2
++
++    if-lez v4, :cond_1f
++
++    invoke-static {}, Landroid/os/SystemClock;->elapsedRealtime()J
++
++    move-result-wide v2
++
++    const-wide/16 v4, 0x3e8
++
++    div-long/2addr v2, v4
++
++    sub-long/2addr v2, v0
++
++    const/4 v5, 0x0
++
++    const-wide/16 v0, 0x5a
++
++    cmp-long v4, v2, v0
++
++    if-gez v4, :cond_1f
++
++    const/4 v5, 0x1
++
++    :cond_1f
++    sget-boolean v0, Lcom/mnsoft/navi/LeafiaTbtMute;->sMuted:Z
++
++    if-eq v5, v0, :cond_31
++
++    sput-boolean v5, Lcom/mnsoft/navi/LeafiaTbtMute;->sMuted:Z
++
++    const-string v0, "LeafiaTBT"
++
++    if-eqz v5, :cond_2c
++
++    const-string v1, "Leafia: phone turn-by-turn active, car navigation turn frames muted"
++
++    goto :goto_2e
++
++    :cond_2c
++    const-string v1, "Leafia: phone turn-by-turn ended, car navigation turn frames back"
++
++    :goto_2e
++    invoke-static {v0, v1}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
++
++    :cond_31
++    return v5
++    :try_end_32
++    .catch Ljava/lang/Throwable; {:try_start_0 .. :try_end_32} :catch_32
++
++    :catch_32
++    const/4 v0, 0x0
++
++    return v0
++.end method
+diff -ruN -I '^ *#' HKMC_Navi_ExSL.stock/com/mnsoft/navi/e/a.smali HKMC_Navi_ExSL.new/com/mnsoft/navi/e/a.smali
+--- HKMC_Navi_ExSL.stock/com/mnsoft/navi/e/a.smali	2026-11-01 02:53:58.181253800 +0000
++++ HKMC_Navi_ExSL.new/com/mnsoft/navi/e/a.smali	2026-11-01 02:53:58.888180800 +0000
+@@ -5386,76 +5386,85 @@
+ .method public static sendClusterData(I[I[D[Ljava/lang/String;[B)V
+     .registers 18
+ 
+-    if-nez p0, :cond_6
++    invoke-static {p0}, Lcom/mnsoft/navi/LeafiaTbtMute;->dropClusterData(I)Z
++
++    move-result v1
++
++    if-eqz v1, :cond_7
++
++    return-void
++
++    :cond_7
++    if-nez p0, :cond_d
+ 
+     invoke-static {p1}, Lcom/mnsoft/navi/e/a;->c([I)V
+ 
+-    :cond_5
+-    :goto_5
++    :cond_c
++    :goto_c
+     return-void
+ 
+-    :cond_6
++    :cond_d
+     const/4 v1, 0x1
+ 
+-    if-ne p0, v1, :cond_d
++    if-ne p0, v1, :cond_14
+ 
+     invoke-static {p1}, Lcom/mnsoft/navi/e/a;->d([I)V
+ 
+-    goto :goto_5
++    goto :goto_c
+ 
+-    :cond_d
++    :cond_14
+     const/4 v1, 0x2
+ 
+-    if-ne p0, v1, :cond_14
++    if-ne p0, v1, :cond_1b
+ 
+     invoke-static {p1}, Lcom/mnsoft/navi/e/a;->e([I)V
+ 
+-    goto :goto_5
++    goto :goto_c
+ 
+-    :cond_14
++    :cond_1b
+     const/4 v1, 0x3
+ 
+-    if-ne p0, v1, :cond_1b
++    if-ne p0, v1, :cond_22
+ 
+     invoke-static {p1}, Lcom/mnsoft/navi/e/a;->f([I)V
+ 
+-    goto :goto_5
++    goto :goto_c
+ 
+-    :cond_1b
++    :cond_22
+     const/4 v1, 0x4
+ 
+-    if-ne p0, v1, :cond_22
++    if-ne p0, v1, :cond_29
+ 
+     invoke-static {p1}, Lcom/mnsoft/navi/e/a;->g([I)V
+ 
+-    goto :goto_5
++    goto :goto_c
+ 
+-    :cond_22
++    :cond_29
+     const/16 v1, 0x64
+ 
+-    if-ne p0, v1, :cond_2a
++    if-ne p0, v1, :cond_31
+ 
+     invoke-static/range {p3 .. p3}, Lcom/mnsoft/navi/e/a;->b([Ljava/lang/String;)V
+ 
+-    goto :goto_5
++    goto :goto_c
+ 
+-    :cond_2a
++    :cond_31
+     const/16 v1, 0x65
+ 
+-    if-ne p0, v1, :cond_34
++    if-ne p0, v1, :cond_3b
+ 
+     move-object/from16 v0, p3
+ 
+     invoke-static {p1, v0}, Lcom/mnsoft/navi/e/a;->a([I[Ljava/lang/String;)V
+ 
+-    goto :goto_5
++    goto :goto_c
+ 
+-    :cond_34
++    :cond_3b
+     const/16 v1, 0x66
+ 
+-    if-ne p0, v1, :cond_79
++    if-ne p0, v1, :cond_80
+ 
+-    if-nez p4, :cond_57
++    if-nez p4, :cond_5e
+ 
+     new-instance v1, Ljava/lang/StringBuilder;
+ 
+@@ -5483,10 +5492,10 @@
+ 
+     invoke-static {v1}, Lcom/mnsoft/navi/b/i;->y(Ljava/lang/String;)V
+ 
+-    goto :goto_5
++    goto :goto_c
+ 
+-    :cond_57
+-    :try_start_57
++    :cond_5e
++    :try_start_5e
+     invoke-static {}, Lcom/mnsoft/navi/message/a;->al()Lcom/hkmc/cluster/NavigationCluster;
+ 
+     move-result-object v1
+@@ -5494,12 +5503,12 @@
+     move-object/from16 v0, p4
+ 
+     invoke-virtual {v1, v0}, Lcom/hkmc/cluster/NavigationCluster;->updateTPTurnListNew([B)V
+-    :try_end_60
+-    .catch Ljava/lang/NoSuchMethodError; {:try_start_57 .. :try_end_60} :catch_61
++    :try_end_67
++    .catch Ljava/lang/NoSuchMethodError; {:try_start_5e .. :try_end_67} :catch_68
+ 
+-    goto :goto_5
++    goto :goto_c
+ 
+-    :catch_61
++    :catch_68
+     move-exception v1
+ 
+     new-instance v2, Ljava/lang/StringBuilder;
+@@ -5522,22 +5531,22 @@
+ 
+     invoke-static {v1}, Lcom/mnsoft/navi/b/i;->y(Ljava/lang/String;)V
+ 
+-    goto :goto_5
++    goto :goto_c
+ 
+-    :cond_79
++    :cond_80
+     const/16 v1, 0x29
+ 
+-    if-ne p0, v1, :cond_b2
++    if-ne p0, v1, :cond_b9
+ 
+-    if-nez p1, :cond_85
++    if-nez p1, :cond_8c
+ 
+     const-string v1, "[ISLW border] HU_Navi_ISLW_PE_01() wParam is null !"
+ 
+     invoke-static {v1}, Lcom/mnsoft/navi/b/i;->y(Ljava/lang/String;)V
+ 
+-    goto :goto_5
++    goto :goto_c
+ 
+-    :cond_85
++    :cond_8c
+     const/4 v1, 0x0
+ 
+     aget v1, p1, v1
+@@ -5550,20 +5559,20 @@
+ 
+     aget v3, p1, v3
+ 
+-    :try_start_8e
++    :try_start_95
+     invoke-static {}, Lcom/mnsoft/navi/message/a;->al()Lcom/hkmc/cluster/NavigationCluster;
+ 
+     move-result-object v4
+ 
+-    if-eqz v4, :cond_5
++    if-eqz v4, :cond_c
+ 
+     invoke-virtual {v4, v1, v2, v3}, Lcom/hkmc/cluster/NavigationCluster;->updateISLWInformation(III)V
+-    :try_end_97
+-    .catch Ljava/lang/Exception; {:try_start_8e .. :try_end_97} :catch_99
++    :try_end_9e
++    .catch Ljava/lang/Exception; {:try_start_95 .. :try_end_9e} :catch_a0
+ 
+-    goto/16 :goto_5
++    goto/16 :goto_c
+ 
+-    :catch_99
++    :catch_a0
+     move-exception v1
+ 
+     new-instance v2, Ljava/lang/StringBuilder;
+@@ -5586,27 +5595,27 @@
+ 
+     invoke-static {v1}, Lcom/mnsoft/navi/b/i;->y(Ljava/lang/String;)V
+ 
+-    goto/16 :goto_5
++    goto/16 :goto_c
+ 
+-    :cond_b2
++    :cond_b9
+     const/16 v1, 0x28
+ 
+-    if-ne p0, v1, :cond_125
++    if-ne p0, v1, :cond_12c
+ 
+-    if-nez p1, :cond_bf
++    if-nez p1, :cond_c6
+ 
+     const-string v1, "[ISLW] HU_Navi_ISLW_PE_00(), wParam is null !"
+ 
+     invoke-static {v1}, Lcom/mnsoft/navi/b/i;->y(Ljava/lang/String;)V
+ 
+-    goto/16 :goto_5
++    goto/16 :goto_c
+ 
+-    :cond_bf
++    :cond_c6
+     array-length v1, p1
+ 
+     const/16 v2, 0xb
+ 
+-    if-ge v1, v2, :cond_dd
++    if-ge v1, v2, :cond_e4
+ 
+     new-instance v1, Ljava/lang/StringBuilder;
+ 
+@@ -5630,9 +5639,9 @@
+ 
+     invoke-static {v1}, Lcom/mnsoft/navi/b/i;->y(Ljava/lang/String;)V
+ 
+-    goto/16 :goto_5
++    goto/16 :goto_c
+ 
+-    :cond_dd
++    :cond_e4
+     const/4 v1, 0x0
+ 
+     aget v2, p1, v1
+@@ -5677,20 +5686,20 @@
+ 
+     aget v12, p1, v1
+ 
+-    :try_start_101
++    :try_start_108
+     invoke-static {}, Lcom/mnsoft/navi/message/a;->al()Lcom/hkmc/cluster/NavigationCluster;
+ 
+     move-result-object v1
+ 
+-    if-eqz v1, :cond_5
++    if-eqz v1, :cond_c
+ 
+     invoke-virtual/range {v1 .. v12}, Lcom/hkmc/cluster/NavigationCluster;->updateSLIFNaviInformation(IIIIIIIIIII)V
+-    :try_end_10a
+-    .catch Ljava/lang/Exception; {:try_start_101 .. :try_end_10a} :catch_10c
++    :try_end_111
++    .catch Ljava/lang/Exception; {:try_start_108 .. :try_end_111} :catch_113
+ 
+-    goto/16 :goto_5
++    goto/16 :goto_c
+ 
+-    :catch_10c
++    :catch_113
+     move-exception v1
+ 
+     new-instance v2, Ljava/lang/StringBuilder;
+@@ -5713,14 +5722,14 @@
+ 
+     invoke-static {v1}, Lcom/mnsoft/navi/b/i;->y(Ljava/lang/String;)V
+ 
+-    goto/16 :goto_5
++    goto/16 :goto_c
+ 
+-    :cond_125
++    :cond_12c
+     const/16 v1, 0x17ef
+ 
+-    if-ne p0, v1, :cond_154
++    if-ne p0, v1, :cond_15b
+ 
+-    if-eqz p4, :cond_136
++    if-eqz p4, :cond_13d
+ 
+     invoke-static {}, Lcom/mnsoft/navi/message/a;->al()Lcom/hkmc/cluster/NavigationCluster;
+ 
+@@ -5730,9 +5739,9 @@
+ 
+     invoke-virtual {v1, v0}, Lcom/hkmc/cluster/NavigationCluster;->updateLaneInfo([B)V
+ 
+-    goto/16 :goto_5
++    goto/16 :goto_c
+ 
+-    :cond_136
++    :cond_13d
+     new-instance v1, Ljava/lang/StringBuilder;
+ 
+     invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
+@@ -5759,14 +5768,14 @@
+ 
+     invoke-static {v1}, Lcom/mnsoft/navi/b/i;->y(Ljava/lang/String;)V
+ 
+-    goto/16 :goto_5
++    goto/16 :goto_c
+ 
+-    :cond_154
++    :cond_15b
+     const/16 v1, 0x17ed
+ 
+-    if-ne p0, v1, :cond_183
++    if-ne p0, v1, :cond_18a
+ 
+-    if-eqz p4, :cond_165
++    if-eqz p4, :cond_16c
+ 
+     invoke-static {}, Lcom/mnsoft/navi/message/a;->al()Lcom/hkmc/cluster/NavigationCluster;
+ 
+@@ -5776,9 +5785,9 @@
+ 
+     invoke-virtual {v1, v0}, Lcom/hkmc/cluster/NavigationCluster;->updateHuCluPE03([B)V
+ 
+-    goto/16 :goto_5
++    goto/16 :goto_c
+ 
+-    :cond_165
++    :cond_16c
+     new-instance v1, Ljava/lang/StringBuilder;
+ 
+     invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
+@@ -5805,14 +5814,14 @@
+ 
+     invoke-static {v1}, Lcom/mnsoft/navi/b/i;->y(Ljava/lang/String;)V
+ 
+-    goto/16 :goto_5
++    goto/16 :goto_c
+ 
+-    :cond_183
++    :cond_18a
+     const/16 v1, 0x17ee
+ 
+-    if-ne p0, v1, :cond_1b2
++    if-ne p0, v1, :cond_1b9
+ 
+-    if-eqz p4, :cond_194
++    if-eqz p4, :cond_19b
+ 
+     invoke-static {}, Lcom/mnsoft/navi/message/a;->al()Lcom/hkmc/cluster/NavigationCluster;
+ 
+@@ -5822,9 +5831,9 @@
+ 
+     invoke-virtual {v1, v0}, Lcom/hkmc/cluster/NavigationCluster;->updateHuCluPE12([B)V
+ 
+-    goto/16 :goto_5
++    goto/16 :goto_c
+ 
+-    :cond_194
++    :cond_19b
+     new-instance v1, Ljava/lang/StringBuilder;
+ 
+     invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
+@@ -5851,14 +5860,14 @@
+ 
+     invoke-static {v1}, Lcom/mnsoft/navi/b/i;->y(Ljava/lang/String;)V
+ 
+-    goto/16 :goto_5
++    goto/16 :goto_c
+ 
+-    :cond_1b2
++    :cond_1b9
+     const/16 v1, 0x17f2
+ 
+-    if-ne p0, v1, :cond_1e1
++    if-ne p0, v1, :cond_1e8
+ 
+-    if-eqz p4, :cond_1c3
++    if-eqz p4, :cond_1ca
+ 
+     invoke-static {}, Lcom/mnsoft/navi/message/a;->al()Lcom/hkmc/cluster/NavigationCluster;
+ 
+@@ -5868,9 +5877,9 @@
+ 
+     invoke-virtual {v1, v0}, Lcom/hkmc/cluster/NavigationCluster;->updateRoadEventInfo([B)V
+ 
+-    goto/16 :goto_5
++    goto/16 :goto_c
+ 
+-    :cond_1c3
++    :cond_1ca
+     new-instance v1, Ljava/lang/StringBuilder;
+ 
+     invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
+@@ -5897,22 +5906,22 @@
+ 
+     invoke-static {v1}, Lcom/mnsoft/navi/b/i;->y(Ljava/lang/String;)V
+ 
+-    goto/16 :goto_5
++    goto/16 :goto_c
+ 
+-    :cond_1e1
++    :cond_1e8
+     const/16 v1, 0x258
+ 
+-    if-ne p0, v1, :cond_20c
++    if-ne p0, v1, :cond_213
+ 
+-    if-eqz p4, :cond_1ee
++    if-eqz p4, :cond_1f5
+ 
+     move-object/from16 v0, p4
+ 
+     invoke-static {v0, p0}, Lcom/mnsoft/navi/e/a;->a([BI)V
+ 
+-    goto/16 :goto_5
++    goto/16 :goto_c
+ 
+-    :cond_1ee
++    :cond_1f5
+     new-instance v1, Ljava/lang/StringBuilder;
+ 
+     invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
+@@ -5939,12 +5948,12 @@
+ 
+     invoke-static {v1}, Lcom/mnsoft/navi/b/i;->y(Ljava/lang/String;)V
+ 
+-    goto/16 :goto_5
++    goto/16 :goto_c
+ 
+-    :cond_20c
++    :cond_213
+     const-string v1, "NaviClusterManager.sendClusterData() undefined type !!!"
+ 
+     invoke-static {v1}, Lcom/mnsoft/navi/b/i;->y(Ljava/lang/String;)V
+ 
+-    goto/16 :goto_5
++    goto/16 :goto_c
+ .end method
+diff -ruN -I '^ *#' HKMC_Navi_ExSL.stock/com/mnsoft/navi/message/a.smali HKMC_Navi_ExSL.new/com/mnsoft/navi/message/a.smali
+--- HKMC_Navi_ExSL.stock/com/mnsoft/navi/message/a.smali	2026-11-01 02:53:58.265022100 +0000
++++ HKMC_Navi_ExSL.new/com/mnsoft/navi/message/a.smali	2026-11-01 02:53:58.945203800 +0000
+@@ -2598,17 +2598,26 @@
+ .method public static d([BI)V
+     .registers 4
+ 
++    invoke-static {p1}, Lcom/mnsoft/navi/LeafiaTbtMute;->dropFrame(I)Z
++
++    move-result v0
++
++    if-eqz v0, :cond_7
++
++    return-void
++
++    :cond_7
+     invoke-static {}, Lcom/mnsoft/navi/am;->getCurrentContext()Landroid/content/Context;
+ 
+     move-result-object v0
+ 
+-    if-eqz v0, :cond_18
++    if-eqz v0, :cond_1f
+ 
+     invoke-static {}, Lcom/mnsoft/navi/message/a;->al()Lcom/hkmc/cluster/NavigationCluster;
+ 
+     move-result-object v0
+ 
+-    if-nez v0, :cond_18
++    if-nez v0, :cond_1f
+ 
+     new-instance v0, Lcom/hkmc/cluster/NavigationCluster;
+ 
+@@ -2620,50 +2629,48 @@
+ 
+     invoke-static {v0}, Lcom/mnsoft/navi/message/a;->a(Lcom/hkmc/cluster/NavigationCluster;)V
+ 
+-    :cond_18
+-    packed-switch p1, :pswitch_data_36
++    :cond_1f
++    packed-switch p1, :pswitch_data_3c
+ 
+     const-string v0, "mainParserToIL() : nFnCode is invlid."
+ 
+     invoke-static {v0}, Lcom/mnsoft/navi/b/i;->y(Ljava/lang/String;)V
+ 
+-    :goto_20
++    :goto_27
+     return-void
+ 
+-    :pswitch_21
++    :pswitch_28
+     invoke-static {p0}, Lcom/mnsoft/navi/message/a;->e([B)V
+ 
+-    goto :goto_20
++    goto :goto_27
+ 
+-    :pswitch_25
++    :pswitch_2c
+     invoke-static {p0}, Lcom/mnsoft/navi/message/a;->i([B)V
+ 
+-    goto :goto_20
++    goto :goto_27
+ 
+-    :pswitch_29
++    :pswitch_30
+     invoke-static {p0}, Lcom/mnsoft/navi/message/a;->g([B)V
+ 
+-    goto :goto_20
++    goto :goto_27
+ 
+-    :pswitch_2d
++    :pswitch_34
+     invoke-static {p0}, Lcom/mnsoft/navi/message/a;->h([B)V
+ 
+-    goto :goto_20
++    goto :goto_27
+ 
+-    :pswitch_31
++    :pswitch_38
+     invoke-static {p0}, Lcom/mnsoft/navi/message/a;->f([B)V
+ 
+-    goto :goto_20
+-
+-    nop
++    goto :goto_27
+ 
+-    :pswitch_data_36
++    :pswitch_data_3c
+     .packed-switch 0x4b
+-        :pswitch_25
+-        :pswitch_2d
+-        :pswitch_29
+-        :pswitch_21
+-        :pswitch_31
++        :pswitch_2c
++        :pswitch_34
++        :pswitch_30
++        :pswitch_28
++        :pswitch_38
+     .end packed-switch
+ .end method
+ 

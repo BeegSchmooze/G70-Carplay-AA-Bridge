@@ -1,0 +1,10 @@
+# never commit firmware, logs or personal captures
+*.odex
+*.apk
+*.dex
+G70PROBE*/
+G70NAVI*/
+G70CAM*/
+JB4PROBE*/
+*.log
+dist/
