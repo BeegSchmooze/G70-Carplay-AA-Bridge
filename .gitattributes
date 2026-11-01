@@ -1,0 +1,6 @@
+# The package runs on the head unit's /system/bin/sh: text files must stay LF
+# on every checkout (CRLF breaks the scripts).
+* text=auto eol=lf
+*.lpd binary
+*.so binary
+package/tools/lpatch binary
