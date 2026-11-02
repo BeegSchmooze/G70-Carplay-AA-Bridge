@@ -9,7 +9,11 @@ patch set for this car's firmware, so every patch here was ported to it.
 > Unofficial. Not affiliated with Hyundai, Kia, Genesis, Google, Apple, the
 > NEMESIS project or HMG Leafia Plus. You use it at your own risk.
 
-## Status (v0.95 = "update 15")
+## Status (v0.96)
+
+v0.96 has the same features as v0.95 ("update 15"). What's new is who can install
+it: any head unit whose stock files match, not only one firmware version (see
+[Compatibility](#compatibility)).
 
 | Feature | State |
 |---|---|
@@ -32,16 +36,36 @@ Work on the open items continues; see [docs/TECHNICAL.md](docs/TECHNICAL.md).
 
 ## Requirements
 
-- Genesis G70 2022, head unit firmware **`IKFL.USA.0000.V014.011.251120`**
-  (the installer refuses anything else).
+- A head unit whose stock files match the ones the build was made from. It was
+  built and tested on a **Genesis G70 2022, firmware
+  `IKFL.USA.0000.V014.011.251120`**; other firmwares (and closely related cars)
+  install only if every file the package changes is byte-identical. Run the
+  compatibility check first (below).
 - NEMESIS 1.15 or newer on the head unit.
 - HMG Leafia Plus **`wireless.carplay.aa`** installed first (basic mode is
   enough): it provides the wireless feature flags and the hotspot.
 - A FAT32 USB drive.
 
+## Compatibility
+
+`G70-Compat-Check.zip` (in the release, source in `tools/compat/`) is a
+read-only NEMESIS script: unzip it onto the USB drive, plug it in, and it writes
+`G70COMPAT-<n>/report.txt` with one line per file the package changes (MATCH or
+DIFFERENT), whether Leafia is installed, and a result:
+
+- **COMPATIBLE**: the package will install on your car.
+- **NOT COMPATIBLE YET**: the report lists which files differ and which feature
+  each one belongs to. A port for your firmware is possible: open an issue with
+  the report, and send a run of the probe (`tools/probe`) privately.
+
+The installer does the same check itself and refuses before changing anything
+if a file doesn't match, so trying an install on an unmatched car is safe. It
+just won't install. Every change is still built from the car's own stock files
+and must match the tested build's checksum.
+
 ## Install
 
-1. Download the release zip (`G70-Bridge-v0.95.zip`) and unzip it onto the root
+1. Download the release zip (`G70-Bridge-v0.96.zip`) and unzip it onto the root
    of the USB drive. You should have `NEMESIS.data` and
    `packages/g70.carplay.bt.zip` at the top level. Do not unzip
    `g70.carplay.bt.zip` itself.
@@ -87,6 +111,7 @@ src/hooks/        the scripts that insert the calls into the apps' smali
 tools/aa-lib-port library port scripts (see docs/TECHNICAL.md)
 tools/checks/     reference/register checkers and the mock head-unit tests
 tools/probe/      read-only diagnostic probe (NEMESIS execute script)
+tools/compat/     read-only compatibility check (generated from the installer's checksums)
 docs/             technical notes
 ```
 

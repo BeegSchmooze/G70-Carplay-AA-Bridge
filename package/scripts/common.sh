@@ -1,5 +1,6 @@
 #!/system/bin/sh
-# g70.carplay.bt - wireless CarPlay for the Genesis G70 (IKFL.USA 251120),
+# g70.carplay.bt - wireless CarPlay for the Genesis G70 (built on IKFL.USA 251120; any
+# firmware whose stock files match byte for byte),
 # built on HMG Leafia Plus parts. Needs Leafia's wireless.carplay.aa (basic mode)
 # installed first for the wireless feature flags and the hotspot.
 #
@@ -147,9 +148,14 @@ is_prev_app() {
 check_unit() {
     local _p _n
     _p=$(getprop ro.build.product 2>/dev/null)
-    if [ "$_p" != "$PRODUCT" ]; then
-        log "FAIL: this build is for $PRODUCT, this unit is '$_p'"
-        return 1
+    # the firmware name is informational: every file this package changes is checked
+    # below and must be the exact stock file the build was made from (an app's .odex
+    # also records the framework it was optimised against), so another firmware with
+    # the same files is the same install
+    if [ "$_p" = "$PRODUCT" ]; then
+        log "firmware $_p - the build's own"
+    else
+        log "firmware '$_p' (this build was made on $PRODUCT): installing only if every file below matches"
     fi
     if [ ! -f "$CP_XML" ]; then
         log "FAIL: wireless CarPlay feature file missing - install HMG Leafia Plus (wireless.carplay.aa) first"

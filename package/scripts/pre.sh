@@ -4,7 +4,7 @@ export PATH=/data/nemesis/bin:/sbin:/vendor/bin:/system/sbin:/system/bin:/system
 
 log "preinstall $PKG"
 if ! check_unit; then
-    toast "G70 wireless CarPlay: this head unit does not match the build. Nothing was changed. See the NEMESIS logs."
+    toast "G70 wireless CarPlay: this head unit's files do not match the build. Nothing was changed. See the NEMESIS logs."
     exit 1
 fi
 if ! run_audio pre; then

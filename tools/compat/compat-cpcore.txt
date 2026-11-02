@@ -1,0 +1,1 @@
+SUM_G70_CPCORE=d3a47296437df56fb1ffc7ac3dfca4cb
