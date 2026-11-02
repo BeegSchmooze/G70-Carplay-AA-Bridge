@@ -12,6 +12,14 @@ is the NEMESIS community package **Turn-by-Turn Guidance for Phone Projection**
 re-pointed, hooks moved, four stock byte runs recovered, plus a logging stub).
 It remains under the AGPL-3.0.
 
+## HMG-API (AGPL-3.0)
+
+The Android Auto turn-by-turn classes in `src/java/com/google/android/projection/leafia/`
+(`LeafiaAa`, `LeafiaAaTurns`, `LeafiaCluster`) are a port of HMG-API's AaTurns and
+cluster hook (https://github.com/VysseCodes/HMG-API, by VysseCodes) to this car's
+GPM, and remain under the AGPL-3.0. The CarPlay iAP2 handover
+(`LeafiaCpHandover`) follows HMG-API's wireless CarPlay bridge design.
+
 ## HMG Leafia Plus (GPL-3.0)
 
 From HMG Leafia Plus (https://github.com/VysseCodes/HMG-Leafia-Plus), GPL-3.0:

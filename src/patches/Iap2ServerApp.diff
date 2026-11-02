@@ -1,87 +1,20 @@
-diff -ruN -I '^ *#' Iap2ServerApp.stock/com/tcc/iap2server/Iap2InitInformationMsg.smali Iap2ServerApp.new/com/tcc/iap2server/Iap2InitInformationMsg.smali
---- Iap2ServerApp.stock/com/tcc/iap2server/Iap2InitInformationMsg.smali	2026-11-01 02:53:45.983130900 +0000
-+++ Iap2ServerApp.new/com/tcc/iap2server/Iap2InitInformationMsg.smali	2026-11-01 02:53:46.574349700 +0000
-@@ -4583,7 +4583,7 @@
- 
-     move-result v0
- 
--    if-eqz v0, :cond_14a
-+    if-eqz v0, :cond_148
- 
-     .line 694
-     sput v2, Lcom/tcc/iap2server/Iap2InitInformationMsg;->iAP2UsedMediaLibrary:I
-@@ -4608,7 +4608,7 @@
- 
-     move-result v0
- 
--    if-eqz v0, :cond_155
-+    if-eqz v0, :cond_153
- 
-     .line 712
-     sput v3, Lcom/tcc/iap2server/Iap2InitInformationMsg;->iAP2UsedBluetoothTransport:I
-@@ -4628,13 +4628,11 @@
+diff -ruN --strip-trailing-cr -I '^ *#' Iap2ServerApp.stock/com/tcc/iap2server/Iap2InitInformationMsg.smali Iap2ServerApp.new/com/tcc/iap2server/Iap2InitInformationMsg.smali
+--- Iap2ServerApp.stock/com/tcc/iap2server/Iap2InitInformationMsg.smali	2026-11-02 17:25:03.694038900 +0000
++++ Iap2ServerApp.new/com/tcc/iap2server/Iap2InitInformationMsg.smali	2026-11-02 17:25:04.330131110 +0000
+@@ -4628,7 +4628,8 @@
  
      const/16 v1, 0x3e7
  
 -    if-lt v0, v1, :cond_15e
--
++    # Leafia: advertise RouteGuidanceDisplay to the iPhone on every spec level so
++    # CarPlay maps send turn-by-turn for the cluster (stock: stepofspec >= 999 only)
+ 
      .line 728
      sput v3, Lcom/tcc/iap2server/Iap2InitInformationMsg;->iAP2UsedRouteGuidance:I
- 
-     .line 732
--    :goto_11d
-+    :goto_11b
-     sget-object v0, Lcom/tcc/iap2server/Iap2InitInformationMsg;->TAG:Ljava/lang/String;
- 
-     new-instance v1, Ljava/lang/StringBuilder;
-@@ -4672,7 +4670,7 @@
- 
-     move-result v0
- 
--    if-ne v0, v3, :cond_149
-+    if-ne v0, v3, :cond_147
- 
-     .line 737
-     sput v3, Lcom/tcc/iap2server/Iap2InitInformationMsg;->iAP2UsedEAP:I
-@@ -4681,11 +4679,11 @@
-     sput v3, Lcom/tcc/iap2server/Iap2InitInformationMsg;->iAP2UsedAppLaunch:I
- 
-     .line 745
--    :cond_149
-+    :cond_147
-     return-void
- 
-     .line 702
--    :cond_14a
-+    :cond_148
-     sput v3, Lcom/tcc/iap2server/Iap2InitInformationMsg;->iAP2UsedMediaLibrary:I
- 
-     .line 703
-@@ -4703,7 +4701,7 @@
-     goto :goto_105
- 
-     .line 721
--    :cond_155
-+    :cond_153
-     invoke-virtual {p0}, Lcom/tcc/iap2server/Iap2InitInformationMsg;->getStepOfSpec()I
- 
-     move-result v0
-@@ -4716,10 +4714,9 @@
-     goto :goto_113
- 
-     .line 730
--    :cond_15e
-     sput v2, Lcom/tcc/iap2server/Iap2InitInformationMsg;->iAP2UsedRouteGuidance:I
- 
--    goto :goto_11d
-+    goto :goto_11b
- .end method
- 
- .method public clearCertificate()V
-diff -ruN -I '^ *#' Iap2ServerApp.stock/com/tcc/iap2server/Iap2ServiceReceiver.smali Iap2ServerApp.new/com/tcc/iap2server/Iap2ServiceReceiver.smali
---- Iap2ServerApp.stock/com/tcc/iap2server/Iap2ServiceReceiver.smali	2026-11-01 02:53:45.931852700 +0000
-+++ Iap2ServerApp.new/com/tcc/iap2server/Iap2ServiceReceiver.smali	2026-11-01 02:53:46.525079600 +0000
-@@ -33,11 +33,93 @@
+diff -ruN --strip-trailing-cr -I '^ *#' Iap2ServerApp.stock/com/tcc/iap2server/Iap2ServiceReceiver.smali Iap2ServerApp.new/com/tcc/iap2server/Iap2ServiceReceiver.smali
+--- Iap2ServerApp.stock/com/tcc/iap2server/Iap2ServiceReceiver.smali	2026-11-02 17:25:03.757606088 +0000
++++ Iap2ServerApp.new/com/tcc/iap2server/Iap2ServiceReceiver.smali	2026-11-02 17:25:04.311090097 +0000
+@@ -33,11 +33,63 @@
  
  # virtual methods
  .method public onReceive(Landroid/content/Context;Landroid/content/Intent;)V
@@ -92,89 +25,59 @@ diff -ruN -I '^ *#' Iap2ServerApp.stock/com/tcc/iap2server/Iap2ServiceReceiver.s
  
 -    .prologue
 -    .line 76
-+    if-eqz p2, :cond_52
++    # HMG Leafia Plus (G70): this receiver is empty in the US build. Restore
++    # recvstart for the Bluetooth/CarPlay-client components (3-5) so the DiPO
++    # bridge can start (and, with leafia.finish, end) an iAP2 session on the
++    # external transport: MSG_TYPE_START / MSG_TYPE_FINISH with arg1 = component.
++    if-eqz p2, :cond_ret
 +
 +    invoke-virtual {p2}, Landroid/content/Intent;->getAction()Ljava/lang/String;
-+
 +    move-result-object v0
-+
 +    const-string v1, "com.telechips.android.iap2.recvstart"
-+
 +    invoke-virtual {v1, v0}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
-+
 +    move-result v1
-+
-+    if-eqz v1, :cond_52
++    if-eqz v1, :cond_ret
 +
 +    const-string v1, "com.telechips.android.iap2.component"
-+
 +    const/4 v2, 0x0
-+
 +    invoke-virtual {p2, v1, v2}, Landroid/content/Intent;->getIntExtra(Ljava/lang/String;I)I
-+
 +    move-result v2
-+
 +    const/4 v1, 0x3
-+
-+    if-lt v2, v1, :cond_52
-+
++    if-lt v2, v1, :cond_ret
 +    const/4 v1, 0x5
-+
-+    if-gt v2, v1, :cond_52
++    if-gt v2, v1, :cond_ret
 +
 +    const/4 v3, 0x1
-+
 +    const-string v1, "leafia.finish"
-+
 +    const/4 v4, 0x0
-+
 +    invoke-virtual {p2, v1, v4}, Landroid/content/Intent;->getBooleanExtra(Ljava/lang/String;Z)Z
-+
 +    move-result v1
-+
-+    if-eqz v1, :cond_26
-+
++    if-eqz v1, :cond_start
 +    const/4 v3, 0x2
 +
-+    :cond_26
++    :cond_start
 +    sget-object v4, Lcom/tcc/iap2server/Iap2Service;->mMsgQueue:Ljava/util/concurrent/BlockingQueue;
-+
-+    if-eqz v4, :cond_52
++    if-eqz v4, :cond_ret
 +
 +    const/4 v1, 0x0
-+
 +    invoke-static {v1, v3}, Landroid/os/Message;->obtain(Landroid/os/Handler;I)Landroid/os/Message;
-+
 +    move-result-object v1
-+
 +    iput v2, v1, Landroid/os/Message;->arg1:I
-+
 +    invoke-interface {v4, v1}, Ljava/util/concurrent/BlockingQueue;->offer(Ljava/lang/Object;)Z
 +
 +    new-instance v0, Ljava/lang/StringBuilder;
-+
 +    invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
-+
 +    const-string v1, "Leafia: recvstart msg "
-+
 +    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-+
 +    invoke-virtual {v0, v3}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
-+
 +    const-string v1, " component "
-+
 +    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
-+
 +    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
-+
 +    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
-+
 +    move-result-object v0
-+
 +    const-string v1, "Iap2Service"
-+
 +    invoke-static {v1, v0}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 +
-+    :cond_52
++    :cond_ret
      return-void
  .end method

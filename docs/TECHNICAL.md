@@ -79,21 +79,47 @@ overwrite the phone's. While the phone guides, DiPO / GPM stamp
 (types 0/2/3/0x64/0x65/0x66, 0x4c–0x4e) while the stamp is fresh. Trap /
 camera frames still pass.
 
+## v0.95 (update 15)
+
+- **Drawn turns and the HUD street name** (Android Auto, `LeafiaAaTurns`): the
+  car's navigation engine sends drawn display types to the cluster (13 turn at
+  an intersection with direction and side-street bits, 17/18 exit right/left,
+  25 fork), not fixed icons. The HUD shows the street name only for those: a
+  name sent with an icon type (0x40 and up) is blanked, as the engine itself
+  does. Direction is degrees clockwise from straight ahead; side-street bits:
+  0x1 ahead, bits 1-7 right (22.5° bins), bits 8-14 left, none for behind. The
+  turn list (`updateTPTurnListNew`, F2 frame) uses the engine's layout (count up
+  to 3, three types, name of turn 1 in UTF-16LE plus one zero byte) and its
+  two-step order (clear frame first); the cross name and the list share one
+  transport channel, so they go out at least 700 ms apart.
+- **Same-phone reconnect** (`LeafiaAaRestart`): when the same phone restarts
+  wireless negotiation while a stale session holds, the stale session is ended
+  so the phone's retry starts clean.
+- **iPhone in the device list** (`LeafiaCpRegister`): Device Connections and
+  auto connection read PhoneProjection's wireless device list, which only GPM
+  filled. DiPO now reports the iPhone (add, ready, connecting, connected) at
+  every wireless CarPlay session start, and disconnected when CarPlay ends (not
+  when Bluetooth drops, which every wireless session does).
+- **CarPlay iAP2 handover** (`LeafiaCpHandover`, HMG-API's design): when the
+  iPhone drops Bluetooth during wireless CarPlay, the iAP2 server starts a
+  session on the CarPlay client component (5); iPhone→car through
+  `CarPlayService.oniAPSendMessage`, car→iPhone through notification 0x51 and
+  `CarPlayService.iAPSendMessage`; route guidance is restarted on it, retried
+  until the server accepts it. Stock bug fixed for this:
+  `CarPlayService$1iAPSendMessage.setMsgDataLen` (non-blocking send) stored the
+  length only when its own field was outside the int range, so every message
+  reached `TccCarPlay_iAPSendMessage` with size 0.
+- **CarPlay drawn turns** (`LeafiaCpTurn`): iAP2 maneuvers at an intersection
+  become drawn turns, with the direction from the exit angle and side roads
+  from the junction's road angles; plus the HUD distance.
+
 ## Open items
 
-- **CarPlay turn-by-turn**: when CarPlay moves to Wi-Fi the iPhone sends
-  `disableBluetooth`; DiPO tells BTCM (`btcmSetupDipoConnectStatus`) and the
-  iAP2 SPP link drops 1.4 s later, so `StartRouteGuidanceUpdate` fails ("called
-  before the iap2 is ready"). There is no iAP2-over-Wi-Fi transport in this
-  firmware; the SPP link has to survive the profile disconnect.
-- **HUD street name** (Android Auto): `updateTPCrossroadName` reaches the cluster
-  but the HUD's street line appears to come from the turn list
-  (`updateTPTurnList` / `updateTPTurnListNew`), which the built-in navigation
-  sends and stock GPM never did.
-- **First step / smoother distance**: use the upcoming-step list to skip
-  "depart/straight" steps, and count the distance down from vehicle speed
-  between phone updates.
-- Lane guidance and the destination readout.
+- **CarPlay turn-by-turn**: confirm the handover session comes up on the car
+  now that messages carry their length.
+- **Side roads for Android Auto**: the phone doesn't send them; match the car's
+  ADASIS map stream to the route.
+- The angle sign for CarPlay side roads (`persist.leafia.g70.cpangle`).
 
 ## Probe
 

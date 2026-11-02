@@ -58,6 +58,28 @@ else
     say "started logger (pid $_lp) - it records until the head unit restarts"
 fi
 
+# the built-in navigation's cluster turn messages (display daemon CoNA: turn type, side
+# street, direction, turn name, turn list). CoNA is too chatty for the main log, so a
+# second logger keeps only these lines.
+for f in "$BGDIR"/cona.txt*; do
+    [ -f "$f" ] && cp "$f" "$OUT/bglog/" 2>/dev/null
+done
+_cona=0
+if [ -f "$BGDIR/conapid" ]; then
+    read -r _cpid < "$BGDIR/conapid"
+    [ -d "/proc/$_cpid" ] && _cona=1
+fi
+if [ $_cona = 0 ]; then
+    rm -f "$BGDIR"/cona.txt* 2>/dev/null
+    (
+        logcat -v time CoNA:V '*:S' 2>/dev/null | grep -E "sendTurnDa|PE02|PE07|TurnName|TBTList|TBT_LIST|LaneInfo|FrameRG_Cluster|SideStreet|ClusterRouteType" >> "$BGDIR/cona.txt"
+    ) > /dev/null 2>&1 &
+    echo $! > "$BGDIR/conapid"
+    say "started cluster turn logger (CoNA)"
+else
+    say "cluster turn logger already running"
+fi
+
 section "props"
 getprop > "$OUT/getprop.txt" 2>&1
 grep -iE "iap|carplay|wifi|bt|bluetooth|wireless|stepofspec|ium" "$OUT/getprop.txt" >> "$LOG"
@@ -191,10 +213,37 @@ else
     say "survey: vsurvey-calls.txt not on the drive, skipped"
 fi
 
+section "launcher (for adding app-menu tiles: Snorkel LEDs, R8W)"
+# the all-apps menu (com.android.launcher3) and the home-screen editor; ~50 MB in all
+mkdir -p "$OUT/launcher"
+for f in /system/app/Launcher_WP3.apk /system/app/Launcher_WP3.odex \
+         /system/app/HKMC_HomeSetting_WP.apk /system/app/HKMC_HomeSetting_WP.odex; do
+    [ -f "$f" ] && grab "$f" "$OUT/launcher/"
+done
+md5 /system/app/Launcher_WP3.* /system/app/HKMC_HomeSetting_WP.* >> "$LOG" 2>&1
+# the menu's saved layout (read-only copy): shows how entries are stored
+for d in /data/data/com.android.launcher3/databases /data/data/com.android.launcher3/shared_prefs; do
+    [ -d "$d" ] && { mkdir -p "$OUT/launcher/${d##*/}"; cp "$d"/* "$OUT/launcher/${d##*/}/" 2>/dev/null; say "copied $d"; }
+done
+
+section "Snorkel LEDs (g70.snorkel)"
+ls -l /system/app/SnorkelWeb.apk >> "$LOG" 2>&1
+ls -l /data/nemesis/backup/g70.snorkel >> "$LOG" 2>&1
+pm list packages -f 2>/dev/null | grep -i snorkel >> "$LOG"
+ps | grep -i snorkel >> "$LOG"
+# the head unit's Wi-Fi (the snorkel controller needs client mode; normally the CarPlay/AA hotspot)
+getprop | grep -iE "wlan|wifi|hostapd" >> "$LOG"
+netcfg >> "$LOG" 2>&1
+dumpsys wifi > "$OUT/dumpsys-wifi.txt" 2>&1
+
 # navigation data probe (read only), when staged on the drive: G70NAVI-<n>/
 if [ -f "$(pwd)/_g70-navi-probe/NEMESIS.sh" ]; then
     say "running _g70-navi-probe"
     ( /system/bin/sh "$(pwd)/_g70-navi-probe/NEMESIS.sh" ) >> "$LOG" 2>&1
+fi
+if [ -f "$(pwd)/_g70-engine-probe/NEMESIS.sh" ]; then
+    say "running _g70-engine-probe"
+    ( /system/bin/sh "$(pwd)/_g70-engine-probe/NEMESIS.sh" ) >> "$LOG" 2>&1
 fi
 say ""
 say "end"

@@ -9,18 +9,24 @@ patch set for this car's firmware, so every patch here was ported to it.
 > Unofficial. Not affiliated with Hyundai, Kia, Genesis, Google, Apple, the
 > NEMESIS project or HMG Leafia Plus. You use it at your own risk.
 
-## Status (release v0.9 = "update 9")
+## Status (v0.95 = "update 15")
 
 | Feature | State |
 |---|---|
 | Wireless Android Auto | Works |
 | Wireless CarPlay (Bluetooth iAP2 bridge, Wi-Fi session, audio, volume) | Works |
-| Android Auto turn-by-turn on the cluster and HUD | Works: arrow and distance to the next turn, shown within about a mile of it |
+| iPhone saved in the car's projection device list / Device Connections | Works (new in v0.95) |
+| Android Auto turn-by-turn on the cluster and HUD | Works: turns, exits and forks drawn the way the car's own navigation draws them (arrow at the real angle), with the distance |
+| Street name above the arrow on the HUD (Android Auto) | Works for turns, exits and forks; like the car's own navigation, icon steps (straight, merge, U-turn, roundabout) show no name |
+| Distance count-down | Smooth: counts down from the car's speed between the phone's updates |
+| First instruction from a standstill | Shows the first real turn instead of Google's "head toward …" step |
+| Android Auto reconnect after walking away with the car running | Fix included (a stale session for the same phone is ended so it can reconnect); not yet confirmed on the car |
 | Car navigation's own turn frames muted while the phone guides | Works; its speed-camera / trap frames still pass |
-| CarPlay turn-by-turn on the cluster | **Not yet**: the car drops the iPhone's Bluetooth iAP2 link when CarPlay moves to Wi-Fi, so route guidance has no channel |
-| Street name above the arrow on the HUD (Android Auto) | **Not yet** |
-| First instruction from a standstill | Shows "straight" for Google's "head toward …" step until the first real turn |
-| Distance count-down | Follows the phone's updates (about once a second), so it can trail the car slightly |
+| Side roads drawn behind the arrow (Android Auto) | **Not yet**: the phone doesn't send them; planned from the car's map data |
+| CarPlay turn-by-turn on the cluster and HUD | **In progress**: route guidance has to move into the CarPlay session when the iPhone drops Bluetooth. v0.95 adds that handover and fixes a stock DiPO bug that sent every message on that channel empty; not yet working on the car. Full CarPlay integration is the next milestone |
+
+Joining another Wi-Fi network from the car's settings turns off the hotspot that
+wireless Android Auto and CarPlay use; restart the head unit to get it back.
 
 Work on the open items continues; see [docs/TECHNICAL.md](docs/TECHNICAL.md).
 
@@ -35,7 +41,7 @@ Work on the open items continues; see [docs/TECHNICAL.md](docs/TECHNICAL.md).
 
 ## Install
 
-1. Download the release zip (`G70-Bridge-v0.9.zip`) and unzip it onto the root
+1. Download the release zip (`G70-Bridge-v0.95.zip`) and unzip it onto the root
    of the USB drive. You should have `NEMESIS.data` and
    `packages/g70.carplay.bt.zip` at the top level. Do not unzip
    `g70.carplay.bt.zip` itself.
@@ -63,10 +69,10 @@ diffs against the stock apps.
 
 | Part | Change |
 |---|---|
-| `HKMC_DiPO` (CarPlay) | Bluetooth→iAP2 bridge, starts the CarPlay engine for wireless, audio source and focus, turn-by-turn gate opened |
+| `HKMC_DiPO` (CarPlay) | Bluetooth→iAP2 bridge, starts the CarPlay engine for wireless, audio source and focus, turn-by-turn gate opened, iPhone in the device list, iAP2 handover into the CarPlay session, drawn turns, stock iAP send-length bug fixed |
 | `Iap2ServerApp` | Starts/ends the iAP2 session on the Bluetooth transport; advertises route guidance |
-| `HKMC_GPM` (Android Auto) | Stuck-session and USB-drive fixes; turn-by-turn manager enabled on this firmware; filters and units for the navigation bridge; near-turn window |
-| `HKMC_Navi_ExSL` (car navigation) | Skips its turn frames while the phone guides |
+| `HKMC_GPM` (Android Auto) | Stuck-session, USB-drive and same-phone reconnect fixes; turn-by-turn sent straight to the cluster (port of HMG-API's AaTurns) with drawn turns, street name, lanes, smooth count-down |
+| `HKMC_Navi_ExSL` (car navigation) | Skips its turn frames while the phone guides; logs what it sends to the cluster (diagnostics) |
 | `libautoreceiver_infobank.so` | Leafia/NEMESIS `projection.tbt` navigation bridge, ported to this car's library build |
 | `libCarPlayCore.so` | Leafia recipe: accept Wi-Fi CarPlay sessions |
 | Leafia audio part | Unchanged (`package/comp/4_audio`) |
@@ -76,6 +82,8 @@ diffs against the stock apps.
 ```
 package/          the NEMESIS package source (zip its contents to make g70.carplay.bt.zip)
 src/patches/      smali diffs: stock app -> this build (new classes included)
+src/java/         Java source of the bridge classes compiled into the apps
+src/hooks/        the scripts that insert the calls into the apps' smali
 tools/aa-lib-port library port scripts (see docs/TECHNICAL.md)
 tools/checks/     reference/register checkers and the mock head-unit tests
 tools/probe/      read-only diagnostic probe (NEMESIS execute script)
