@@ -1,6 +1,6 @@
 diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/LeafiaCpBridge.smali HKMC_DiPO.new/com/daudio/app/dipo/LeafiaCpBridge.smali
 --- HKMC_DiPO.stock/com/daudio/app/dipo/LeafiaCpBridge.smali	1970-01-01 00:00:00.000000000 +0000
-+++ HKMC_DiPO.new/com/daudio/app/dipo/LeafiaCpBridge.smali	2026-11-02 17:24:54.403487211 +0000
++++ HKMC_DiPO.new/com/daudio/app/dipo/LeafiaCpBridge.smali	2026-11-03 10:36:41.445336648 +0000
 @@ -0,0 +1,714 @@
 +.class public final Lcom/daudio/app/dipo/LeafiaCpBridge;
 +.super Landroid/os/Handler;
@@ -718,7 +718,7 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +.end method
 diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/LeafiaCpConn.smali HKMC_DiPO.new/com/daudio/app/dipo/LeafiaCpConn.smali
 --- HKMC_DiPO.stock/com/daudio/app/dipo/LeafiaCpConn.smali	1970-01-01 00:00:00.000000000 +0000
-+++ HKMC_DiPO.new/com/daudio/app/dipo/LeafiaCpConn.smali	2026-11-02 17:24:54.467100035 +0000
++++ HKMC_DiPO.new/com/daudio/app/dipo/LeafiaCpConn.smali	2026-11-03 10:36:41.491689534 +0000
 @@ -0,0 +1,39 @@
 +.class public final Lcom/daudio/app/dipo/LeafiaCpConn;
 +.super Ljava/lang/Object;
@@ -761,7 +761,7 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +.end method
 diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/LeafiaCpConnect.smali HKMC_DiPO.new/com/daudio/app/dipo/LeafiaCpConnect.smali
 --- HKMC_DiPO.stock/com/daudio/app/dipo/LeafiaCpConnect.smali	1970-01-01 00:00:00.000000000 +0000
-+++ HKMC_DiPO.new/com/daudio/app/dipo/LeafiaCpConnect.smali	2026-11-02 17:24:54.876690931 +0000
++++ HKMC_DiPO.new/com/daudio/app/dipo/LeafiaCpConnect.smali	2026-11-03 10:36:41.878842374 +0000
 @@ -0,0 +1,72 @@
 +.class public final Lcom/daudio/app/dipo/LeafiaCpConnect;
 +.super Ljava/lang/Thread;
@@ -837,7 +837,7 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +.end method
 diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/LeafiaCpHandover$1.smali HKMC_DiPO.new/com/daudio/app/dipo/LeafiaCpHandover$1.smali
 --- HKMC_DiPO.stock/com/daudio/app/dipo/LeafiaCpHandover$1.smali	1970-01-01 00:00:00.000000000 +0000
-+++ HKMC_DiPO.new/com/daudio/app/dipo/LeafiaCpHandover$1.smali	2026-11-02 17:24:54.880357354 +0000
++++ HKMC_DiPO.new/com/daudio/app/dipo/LeafiaCpHandover$1.smali	2026-11-03 10:36:41.887719430 +0000
 @@ -0,0 +1,52 @@
 +.class Lcom/daudio/app/dipo/LeafiaCpHandover$1;
 +.super Ljava/lang/Object;
@@ -893,7 +893,7 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +.end method
 diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/LeafiaCpHandover$2.smali HKMC_DiPO.new/com/daudio/app/dipo/LeafiaCpHandover$2.smali
 --- HKMC_DiPO.stock/com/daudio/app/dipo/LeafiaCpHandover$2.smali	1970-01-01 00:00:00.000000000 +0000
-+++ HKMC_DiPO.new/com/daudio/app/dipo/LeafiaCpHandover$2.smali	2026-11-02 17:24:54.407109069 +0000
++++ HKMC_DiPO.new/com/daudio/app/dipo/LeafiaCpHandover$2.smali	2026-11-03 10:36:41.893409987 +0000
 @@ -0,0 +1,52 @@
 +.class Lcom/daudio/app/dipo/LeafiaCpHandover$2;
 +.super Ljava/lang/Object;
@@ -949,8 +949,8 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +.end method
 diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/LeafiaCpHandover$3.smali HKMC_DiPO.new/com/daudio/app/dipo/LeafiaCpHandover$3.smali
 --- HKMC_DiPO.stock/com/daudio/app/dipo/LeafiaCpHandover$3.smali	1970-01-01 00:00:00.000000000 +0000
-+++ HKMC_DiPO.new/com/daudio/app/dipo/LeafiaCpHandover$3.smali	2026-11-02 17:24:54.412000125 +0000
-@@ -0,0 +1,159 @@
++++ HKMC_DiPO.new/com/daudio/app/dipo/LeafiaCpHandover$3.smali	2026-11-03 10:36:41.896644449 +0000
+@@ -0,0 +1,163 @@
 +.class Lcom/daudio/app/dipo/LeafiaCpHandover$3;
 +.super Ljava/lang/Object;
 +.source "LeafiaCpHandover.java"
@@ -983,7 +983,7 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +
 +# virtual methods
 +.method public run()V
-+    .registers 7
++    .registers 8
 +
 +    .line 218
 +    sget-boolean v0, Lcom/daudio/app/dipo/LeafiaCpHandover;->sClientUp:Z
@@ -1004,7 +1004,7 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +
 +    const/4 v3, 0x1
 +
-+    if-eqz v0, :cond_30
++    if-eqz v0, :cond_2f
 +
 +    :try_start_f
 +    new-array v4, v3, [Ljava/lang/String;
@@ -1016,56 +1016,54 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +    .line 222
 +    invoke-interface {v0, v4, v3, v3}, Lcom/tcc/iap2/IIap2Service;->Iap2SvcStartRouteGuidanceUpdate([Ljava/lang/String;ZZ)Z
 +
-+    move-result v0
++    move-result v2
 +    :try_end_19
-+    .catchall {:try_start_f .. :try_end_19} :catchall_1b
++    .catchall {:try_start_f .. :try_end_19} :catchall_1a
 +
-+    move v2, v0
++    goto :goto_2f
 +
-+    goto :goto_30
-+
-+    :catchall_1b
-+    move-exception v0
++    :catchall_1a
++    move-exception v4
 +
 +    .line 224
-+    new-instance v4, Ljava/lang/StringBuilder;
++    new-instance v5, Ljava/lang/StringBuilder;
 +
-+    invoke-direct {v4}, Ljava/lang/StringBuilder;-><init>()V
++    invoke-direct {v5}, Ljava/lang/StringBuilder;-><init>()V
 +
-+    const-string v5, "Leafia: route guidance restart failed: "
++    const-string v6, "Leafia: route guidance restart failed: "
 +
-+    invoke-virtual {v4, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 +
-+    invoke-virtual {v4, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
++    invoke-virtual {v5, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
 +
-+    invoke-virtual {v4}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
++    invoke-virtual {v5}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
 +
-+    move-result-object v0
++    move-result-object v4
 +
-+    invoke-static {v1, v0}, Landroid/util/Log;->w(Ljava/lang/String;Ljava/lang/String;)I
++    invoke-static {v1, v4}, Landroid/util/Log;->w(Ljava/lang/String;Ljava/lang/String;)I
 +
 +    .line 226
-+    :cond_30
-+    :goto_30
-+    sget v0, Lcom/daudio/app/dipo/LeafiaCpHandover;->sRouteTries:I
++    :cond_2f
++    :goto_2f
++    sget v4, Lcom/daudio/app/dipo/LeafiaCpHandover;->sRouteTries:I
 +
-+    add-int/2addr v0, v3
++    add-int/2addr v4, v3
 +
-+    sput v0, Lcom/daudio/app/dipo/LeafiaCpHandover;->sRouteTries:I
++    sput v4, Lcom/daudio/app/dipo/LeafiaCpHandover;->sRouteTries:I
 +
-+    if-nez v2, :cond_48
++    if-nez v2, :cond_47
 +
 +    .line 227
-+    sget v0, Lcom/daudio/app/dipo/LeafiaCpHandover;->sRouteTries:I
++    sget v3, Lcom/daudio/app/dipo/LeafiaCpHandover;->sRouteTries:I
 +
-+    const/16 v3, 0x1e
++    const/16 v4, 0x1e
 +
-+    if-lt v0, v3, :cond_3e
++    if-lt v3, v4, :cond_3d
 +
-+    goto :goto_48
++    goto :goto_47
 +
-+    .line 230
-+    :cond_3e
++    .line 231
++    :cond_3d
 +    invoke-static {}, Lcom/daudio/app/dipo/LeafiaCpHandover;->tx()Landroid/os/Handler;
 +
 +    move-result-object v0
@@ -1074,46 +1072,52 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +
 +    invoke-virtual {v0, p0, v1, v2}, Landroid/os/Handler;->postDelayed(Ljava/lang/Runnable;J)Z
 +
-+    goto :goto_6b
++    goto :goto_6f
 +
 +    .line 228
-+    :cond_48
-+    :goto_48
-+    new-instance v0, Ljava/lang/StringBuilder;
++    :cond_47
++    :goto_47
++    new-instance v3, Ljava/lang/StringBuilder;
 +
-+    invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
++    invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
 +
-+    const-string v3, "Leafia: route guidance restarted on the CarPlay channel: "
++    const-string v4, "Leafia: route guidance restarted on the CarPlay channel: "
 +
-+    invoke-virtual {v0, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 +
-+    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Z)Ljava/lang/StringBuilder;
++    invoke-virtual {v3, v2}, Ljava/lang/StringBuilder;->append(Z)Ljava/lang/StringBuilder;
 +
-+    const-string v2, " (try "
++    const-string v4, " (try "
 +
-+    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 +
-+    sget v2, Lcom/daudio/app/dipo/LeafiaCpHandover;->sRouteTries:I
++    sget v4, Lcom/daudio/app/dipo/LeafiaCpHandover;->sRouteTries:I
 +
-+    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
++    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
 +
-+    const-string v2, ")"
++    const-string v4, ")"
 +
-+    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
 +
-+    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
++    invoke-virtual {v3}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
 +
-+    move-result-object v0
++    move-result-object v3
 +
-+    invoke-static {v1, v0}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
++    invoke-static {v1, v3}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 +
-+    :goto_6b
++    if-eqz v2, :cond_6f
++
++    .line 229
++    invoke-static {v0}, Lcom/daudio/app/dipo/LeafiaCpHandover;->startMedia(Lcom/tcc/iap2/IIap2Service;)V
++
++    :cond_6f
++    :goto_6f
 +    return-void
 +.end method
 diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/LeafiaCpHandover$4.smali HKMC_DiPO.new/com/daudio/app/dipo/LeafiaCpHandover$4.smali
 --- HKMC_DiPO.stock/com/daudio/app/dipo/LeafiaCpHandover$4.smali	1970-01-01 00:00:00.000000000 +0000
-+++ HKMC_DiPO.new/com/daudio/app/dipo/LeafiaCpHandover$4.smali	2026-11-02 17:24:54.415580378 +0000
-@@ -0,0 +1,172 @@
++++ HKMC_DiPO.new/com/daudio/app/dipo/LeafiaCpHandover$4.smali	2026-11-03 10:36:41.900012251 +0000
+@@ -0,0 +1,168 @@
 +.class Lcom/daudio/app/dipo/LeafiaCpHandover$4;
 +.super Ljava/lang/Object;
 +.source "LeafiaCpHandover.java"
@@ -1148,7 +1152,7 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +        }
 +    .end annotation
 +
-+    .line 247
++    .line 261
 +    iput-object p1, p0, Lcom/daudio/app/dipo/LeafiaCpHandover$4;->val$cp:Lcom/daudio/app/dipo/telechips/CarPlayService;
 +
 +    iput-object p2, p0, Lcom/daudio/app/dipo/LeafiaCpHandover$4;->val$b:[B
@@ -1165,41 +1169,37 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +
 +    const-string v0, "LeafiaCP"
 +
-+    .line 251
++    .line 265
 +    :try_start_2
 +    iget-object v1, p0, Lcom/daudio/app/dipo/LeafiaCpHandover$4;->val$cp:Lcom/daudio/app/dipo/telechips/CarPlayService;
 +
 +    iget-object v2, p0, Lcom/daudio/app/dipo/LeafiaCpHandover$4;->val$b:[B
 +
-+    iget-object v3, p0, Lcom/daudio/app/dipo/LeafiaCpHandover$4;->val$b:[B
-+
-+    array-length v3, v3
-+
-+    invoke-virtual {v1, v2, v3}, Lcom/daudio/app/dipo/telechips/CarPlayService;->iAPSendMessage([BI)Lcom/daudio/app/dipo/telechips/CarPlayReturn;
++    invoke-static {v1, v2}, Lcom/daudio/app/dipo/LeafiaCpHandover;->send(Lcom/daudio/app/dipo/telechips/CarPlayService;[B)Ljava/lang/Object;
 +
 +    move-result-object v1
 +
-+    .line 252
++    .line 266
 +    sget v2, Lcom/daudio/app/dipo/LeafiaCpHandover;->sSent:I
 +
 +    add-int/lit8 v2, v2, 0x1
 +
 +    sput v2, Lcom/daudio/app/dipo/LeafiaCpHandover;->sSent:I
 +
-+    .line 253
++    .line 267
 +    sget v2, Lcom/daudio/app/dipo/LeafiaCpHandover;->sSent:I
 +
 +    const/4 v3, 0x3
 +
-+    if-le v2, v3, :cond_1e
++    if-le v2, v3, :cond_1b
 +
 +    sget v2, Lcom/daudio/app/dipo/LeafiaCpHandover;->sSent:I
 +
 +    rem-int/lit16 v2, v2, 0xc8
 +
-+    if-nez v2, :cond_73
++    if-nez v2, :cond_70
 +
-+    :cond_1e
++    :cond_1b
 +    new-instance v2, Ljava/lang/StringBuilder;
 +
 +    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
@@ -1237,35 +1237,35 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +    move-result-object v1
 +
 +    invoke-static {v0, v1}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
-+    :try_end_4c
-+    .catchall {:try_start_2 .. :try_end_4c} :catchall_4d
++    :try_end_49
++    .catchall {:try_start_2 .. :try_end_49} :catchall_4a
 +
-+    goto :goto_73
++    goto :goto_70
 +
-+    :catchall_4d
++    :catchall_4a
 +    move-exception v1
 +
-+    .line 255
++    .line 269
 +    sget v2, Lcom/daudio/app/dipo/LeafiaCpHandover;->sFail:I
 +
 +    add-int/lit8 v2, v2, 0x1
 +
 +    sput v2, Lcom/daudio/app/dipo/LeafiaCpHandover;->sFail:I
 +
-+    .line 256
++    .line 270
 +    sget v2, Lcom/daudio/app/dipo/LeafiaCpHandover;->sFail:I
 +
 +    const/4 v3, 0x5
 +
-+    if-le v2, v3, :cond_5f
++    if-le v2, v3, :cond_5c
 +
 +    sget v2, Lcom/daudio/app/dipo/LeafiaCpHandover;->sFail:I
 +
 +    rem-int/lit8 v2, v2, 0x32
 +
-+    if-nez v2, :cond_73
++    if-nez v2, :cond_70
 +
-+    :cond_5f
++    :cond_5c
 +    new-instance v2, Ljava/lang/StringBuilder;
 +
 +    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
@@ -1282,14 +1282,14 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +
 +    invoke-static {v0, v1}, Landroid/util/Log;->w(Ljava/lang/String;Ljava/lang/String;)I
 +
-+    :cond_73
-+    :goto_73
++    :cond_70
++    :goto_70
 +    return-void
 +.end method
 diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/LeafiaCpHandover.smali HKMC_DiPO.new/com/daudio/app/dipo/LeafiaCpHandover.smali
 --- HKMC_DiPO.stock/com/daudio/app/dipo/LeafiaCpHandover.smali	1970-01-01 00:00:00.000000000 +0000
-+++ HKMC_DiPO.new/com/daudio/app/dipo/LeafiaCpHandover.smali	2026-11-02 17:24:54.419547118 +0000
-@@ -0,0 +1,1284 @@
++++ HKMC_DiPO.new/com/daudio/app/dipo/LeafiaCpHandover.smali	2026-11-03 10:36:41.903376744 +0000
+@@ -0,0 +1,1806 @@
 +.class public final Lcom/daudio/app/dipo/LeafiaCpHandover;
 +.super Ljava/lang/Object;
 +.source "LeafiaCpHandover.java"
@@ -1303,6 +1303,12 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +.field static final MAX_PENDING:I = 0x40
 +
 +.field static final NOTI_IDENTIFICATION_ACCEPTED:I = 0x0
++
++.field static final NOTI_LANE_GUIDANCE:I = 0x7a
++
++.field static final NOTI_ROUTE_GUIDANCE:I = 0x78
++
++.field static final NOTI_ROUTE_MANEUVER:I = 0x79
 +
 +.field static final NOTI_TRANSPORT_IDENTIFIER:I = 0x18
 +
@@ -1322,9 +1328,15 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +
 +.field static sFail:I
 +
++.field static volatile sForced:Z
++
 +.field static sFromPhone:I
 +
 +.field static sLastRecvstart:Ljava/lang/String;
++
++.field static sNativeSend:Ljava/lang/reflect/Method;
++
++.field static sNativeTried:Z
 +
 +.field static final sPending:Ljava/util/ArrayList;
 +    .annotation system Ldalvik/annotation/Signature;
@@ -1340,6 +1352,16 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +.field static final sRouteStart:Ljava/lang/Runnable;
 +
 +.field static sRouteTries:I
++
++.field static final sSeen:Ljava/util/Set;
++    .annotation system Ldalvik/annotation/Signature;
++        value = {
++            "Ljava/util/Set<",
++            "Ljava/lang/Integer;",
++            ">;"
++        }
++    .end annotation
++.end field
 +
 +.field static sSent:I
 +
@@ -1365,6 +1387,17 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +    invoke-direct {v0}, Lcom/daudio/app/dipo/LeafiaCpHandover$3;-><init>()V
 +
 +    sput-object v0, Lcom/daudio/app/dipo/LeafiaCpHandover;->sRouteStart:Ljava/lang/Runnable;
++
++    .line 387
++    new-instance v0, Ljava/util/HashSet;
++
++    invoke-direct {v0}, Ljava/util/HashSet;-><init>()V
++
++    invoke-static {v0}, Ljava/util/Collections;->synchronizedSet(Ljava/util/Set;)Ljava/util/Set;
++
++    move-result-object v0
++
++    sput-object v0, Lcom/daudio/app/dipo/LeafiaCpHandover;->sSeen:Ljava/util/Set;
 +
 +    return-void
 +.end method
@@ -1438,30 +1471,151 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +    return-object v0
 +.end method
 +
-+.method public static dropNoti(I)Z
++.method static dataNoti(I)Z
 +    .registers 2
 +
-+    .line 281
++    const/16 v0, 0x1e
++
++    if-lt p0, v0, :cond_8
++
++    const/16 v0, 0x20
++
++    if-le p0, v0, :cond_1f
++
++    :cond_8
++    const/16 v0, 0x24
++
++    if-lt p0, v0, :cond_10
++
++    const/16 v0, 0x26
++
++    if-le p0, v0, :cond_1f
++
++    :cond_10
++    const/16 v0, 0x78
++
++    if-eq p0, v0, :cond_1f
++
++    const/16 v0, 0x79
++
++    if-eq p0, v0, :cond_1f
++
++    const/16 v0, 0x7a
++
++    if-ne p0, v0, :cond_1d
++
++    goto :goto_1f
++
++    :cond_1d
++    const/4 p0, 0x0
++
++    goto :goto_20
++
++    :cond_1f
++    :goto_1f
++    const/4 p0, 0x1
++
++    :goto_20
++    return p0
++.end method
++
++.method public static dropNoti(I)Z
++    .registers 4
++
++    .line 378
 +    sget-boolean v0, Lcom/daudio/app/dipo/LeafiaCpHandover;->sClient:Z
 +
-+    if-eqz v0, :cond_c
++    if-eqz v0, :cond_a
 +
-+    if-eqz p0, :cond_a
++    if-eqz p0, :cond_14
 +
 +    const/16 v0, 0x18
 +
-+    if-ne p0, v0, :cond_c
++    if-eq p0, v0, :cond_14
 +
 +    :cond_a
-+    const/4 p0, 0x1
++    sget-boolean v0, Lcom/daudio/app/dipo/LeafiaCpHandover;->sForced:Z
 +
-+    goto :goto_d
++    if-eqz v0, :cond_16
 +
-+    :cond_c
-+    const/4 p0, 0x0
++    .line 379
++    invoke-static {p0}, Lcom/daudio/app/dipo/LeafiaCpHandover;->dataNoti(I)Z
 +
-+    :goto_d
-+    return p0
++    move-result v0
++
++    if-nez v0, :cond_16
++
++    :cond_14
++    const/4 v0, 0x1
++
++    goto :goto_17
++
++    :cond_16
++    const/4 v0, 0x0
++
++    .line 380
++    :goto_17
++    sget-object v1, Lcom/daudio/app/dipo/LeafiaCpHandover;->sSeen:Ljava/util/Set;
++
++    invoke-static {p0}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
++
++    move-result-object v2
++
++    invoke-interface {v1, v2}, Ljava/util/Set;->add(Ljava/lang/Object;)Z
++
++    move-result v1
++
++    if-eqz v1, :cond_57
++
++    .line 381
++    new-instance v1, Ljava/lang/StringBuilder;
++
++    invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
++
++    const-string v2, "Leafia: first iAP2 notification "
++
++    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    invoke-virtual {v1, p0}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
++
++    if-eqz v0, :cond_35
++
++    const-string p0, " (kept from DiPO)"
++
++    goto :goto_37
++
++    :cond_35
++    const-string p0, " (to DiPO)"
++
++    :goto_37
++    invoke-virtual {v1, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    const-string p0, " forced="
++
++    invoke-virtual {v1, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    sget-boolean p0, Lcom/daudio/app/dipo/LeafiaCpHandover;->sForced:Z
++
++    invoke-virtual {v1, p0}, Ljava/lang/StringBuilder;->append(Z)Ljava/lang/StringBuilder;
++
++    const-string p0, " client="
++
++    invoke-virtual {v1, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    sget-boolean p0, Lcom/daudio/app/dipo/LeafiaCpHandover;->sClient:Z
++
++    invoke-virtual {v1, p0}, Ljava/lang/StringBuilder;->append(Z)Ljava/lang/StringBuilder;
++
++    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
++
++    move-result-object p0
++
++    const-string v1, "LeafiaCP"
++
++    invoke-static {v1, p0}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
++
++    :cond_57
++    return v0
 +.end method
 +
 +.method static enabled()Z
@@ -1532,12 +1686,12 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +.method static flush(Lcom/tcc/iap2/IIap2Service;)V
 +    .registers 6
 +
-+    .line 286
++    .line 391
 +    sget-object v0, Lcom/daudio/app/dipo/LeafiaCpHandover;->sPending:Ljava/util/ArrayList;
 +
 +    monitor-enter v0
 +
-+    .line 287
++    .line 392
 +    :try_start_3
 +    sget-object v1, Lcom/daudio/app/dipo/LeafiaCpHandover;->sPending:Ljava/util/ArrayList;
 +
@@ -1551,7 +1705,7 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +
 +    return-void
 +
-+    .line 288
++    .line 393
 +    :cond_d
 +    new-instance v1, Ljava/util/ArrayList;
 +
@@ -1559,17 +1713,17 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +
 +    invoke-direct {v1, v2}, Ljava/util/ArrayList;-><init>(Ljava/util/Collection;)V
 +
-+    .line 289
++    .line 394
 +    sget-object v2, Lcom/daudio/app/dipo/LeafiaCpHandover;->sPending:Ljava/util/ArrayList;
 +
 +    invoke-virtual {v2}, Ljava/util/ArrayList;->clear()V
 +
-+    .line 290
++    .line 395
 +    monitor-exit v0
 +    :try_end_1a
 +    .catchall {:try_start_3 .. :try_end_1a} :catchall_67
 +
-+    .line 291
++    .line 396
 +    invoke-virtual {v1}, Ljava/util/ArrayList;->iterator()Ljava/util/Iterator;
 +
 +    move-result-object v0
@@ -1587,7 +1741,7 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +
 +    check-cast v2, [B
 +
-+    .line 293
++    .line 398
 +    :try_start_2a
 +    array-length v3, v2
 +
@@ -1600,7 +1754,7 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +    :catchall_2f
 +    move-exception v2
 +
-+    .line 295
++    .line 400
 +    new-instance v3, Ljava/lang/StringBuilder;
 +
 +    invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
@@ -1621,7 +1775,7 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +
 +    goto :goto_1e
 +
-+    .line 298
++    .line 403
 +    :cond_47
 +    new-instance p0, Ljava/lang/StringBuilder;
 +
@@ -1654,7 +1808,7 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +    :catchall_67
 +    move-exception p0
 +
-+    .line 290
++    .line 395
 +    :try_start_68
 +    monitor-exit v0
 +    :try_end_69
@@ -1946,25 +2100,141 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +
 +    if-ne p0, v0, :cond_11
 +
-+    .line 236
++    .line 250
 +    sget-boolean p0, Lcom/daudio/app/dipo/LeafiaCpHandover;->sClientUp:Z
 +
 +    if-eqz p0, :cond_11
 +
 +    const/4 p0, 0x0
 +
-+    .line 237
++    .line 251
 +    sput-boolean p0, Lcom/daudio/app/dipo/LeafiaCpHandover;->sClientUp:Z
 +
 +    const-string p0, "LeafiaCP"
 +
 +    const-string v0, "Leafia: CarPlay-channel iAP2 session down"
 +
-+    .line 238
++    .line 252
 +    invoke-static {p0, v0}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
 +
 +    :cond_11
 +    return-void
++.end method
++
++.method public static letNotify(ILjava/lang/String;)Z
++    .registers 5
++
++    const/4 v0, 0x0
++
++    if-eqz p1, :cond_6
++
++    .line 339
++    sput-boolean v0, Lcom/daudio/app/dipo/LeafiaCpHandover;->sForced:Z
++
++    return v0
++
++    :cond_6
++    const/4 p1, 0x4
++
++    const/4 v1, 0x1
++
++    if-eq p0, p1, :cond_d
++
++    const/4 p1, 0x5
++
++    if-ne p0, p1, :cond_18
++
++    .line 343
++    :cond_d
++    invoke-static {}, Lcom/daudio/app/dipo/LeafiaCpBridge;->sessionDevice()Ljava/lang/String;
++
++    move-result-object p1
++
++    if-nez p1, :cond_17
++
++    sget-boolean p1, Lcom/daudio/app/dipo/LeafiaCpHandover;->sClient:Z
++
++    if-eqz p1, :cond_18
++
++    :cond_17
++    const/4 v0, 0x1
++
++    :cond_18
++    const-string p1, "LeafiaCP"
++
++    if-eqz v0, :cond_49
++
++    .line 345
++    sput-boolean v1, Lcom/daudio/app/dipo/LeafiaCpHandover;->sForced:Z
++
++    .line 346
++    sget-object v1, Lcom/daudio/app/dipo/LeafiaCpHandover;->sSeen:Ljava/util/Set;
++
++    invoke-interface {v1}, Ljava/util/Set;->clear()V
++
++    .line 347
++    new-instance v1, Ljava/lang/StringBuilder;
++
++    invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
++
++    const-string v2, "Leafia: wireless iAP2 session connected (component "
++
++    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    invoke-virtual {v1, p0}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
++
++    const-string p0, "): DiPO route guidance on"
++
++    invoke-virtual {v1, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    .line 348
++    sget-boolean p0, Lcom/daudio/app/dipo/LeafiaCpHandover;->sClient:Z
++
++    if-eqz p0, :cond_3c
++
++    const-string p0, " (CarPlay channel)"
++
++    goto :goto_3e
++
++    :cond_3c
++    const-string p0, ""
++
++    :goto_3e
++    invoke-virtual {v1, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
++
++    move-result-object p0
++
++    .line 347
++    invoke-static {p1, p0}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
++
++    goto :goto_62
++
++    .line 350
++    :cond_49
++    new-instance v1, Ljava/lang/StringBuilder;
++
++    invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
++
++    const-string v2, "Leafia: iAP2 connect component "
++
++    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    invoke-virtual {v1, p0}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
++
++    const-string p0, " without a serial, not a bridged session"
++
++    invoke-virtual {v1, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
++
++    move-result-object p0
++
++    invoke-static {p1, p0}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
++
++    :goto_62
++    return v0
 +.end method
 +
 +.method public static notify51(Lcom/tcc/iap2/Iap2NotiMsg;)V
@@ -1972,7 +2242,7 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +
 +    if-eqz p0, :cond_43
 +
-+    .line 265
++    .line 312
 +    :try_start_2
 +    sget-boolean v0, Lcom/daudio/app/dipo/LeafiaCpHandover;->sClient:Z
 +
@@ -1980,7 +2250,7 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +
 +    goto :goto_43
 +
-+    .line 266
++    .line 313
 +    :cond_7
 +    invoke-virtual {p0}, Lcom/tcc/iap2/Iap2NotiMsg;->getItemGroup()Lcom/tcc/iap2/Iap2NotiMsg$Iap2ObjGroup;
 +
@@ -1990,7 +2260,7 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +
 +    return-void
 +
-+    .line 268
++    .line 315
 +    :cond_e
 +    invoke-virtual {p0}, Lcom/tcc/iap2/Iap2NotiMsg$Iap2ObjGroup;->getItemCnt()I
 +
@@ -2001,7 +2271,7 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +    :goto_13
 +    if-ge v1, v0, :cond_43
 +
-+    .line 270
++    .line 317
 +    invoke-virtual {p0, v1}, Lcom/tcc/iap2/Iap2NotiMsg$Iap2ObjGroup;->getObjItem(I)Lcom/tcc/iap2/Iap2NotiMsg$Iap2ObjItem;
 +
 +    move-result-object v2
@@ -2012,7 +2282,7 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +
 +    goto :goto_21
 +
-+    .line 271
++    .line 318
 +    :cond_1d
 +    invoke-virtual {v2}, Lcom/tcc/iap2/Iap2NotiMsg$Iap2ObjItem;->getItemByteArray()[B
 +
@@ -2021,7 +2291,7 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +    :goto_21
 +    if-eqz v2, :cond_29
 +
-+    .line 272
++    .line 319
 +    array-length v3, v2
 +
 +    if-lez v3, :cond_29
@@ -2038,7 +2308,7 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +    :catchall_2c
 +    move-exception p0
 +
-+    .line 275
++    .line 322
 +    new-instance v0, Ljava/lang/StringBuilder;
 +
 +    invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
@@ -2225,6 +2495,156 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +    .catchall {:try_start_13 .. :try_end_1c} :catchall_1a
 +
 +    throw v1
++.end method
++
++.method static send(Lcom/daudio/app/dipo/telechips/CarPlayService;[B)Ljava/lang/Object;
++    .registers 10
++
++    .line 288
++    sget-boolean v0, Lcom/daudio/app/dipo/LeafiaCpHandover;->sNativeTried:Z
++
++    const/4 v1, 0x0
++
++    const/4 v2, 0x2
++
++    const-string v3, "LeafiaCP"
++
++    const/4 v4, 0x1
++
++    if-nez v0, :cond_38
++
++    .line 289
++    sput-boolean v4, Lcom/daudio/app/dipo/LeafiaCpHandover;->sNativeTried:Z
++
++    .line 291
++    :try_start_b
++    const-class v0, Lcom/daudio/app/dipo/telechips/CarPlayService;
++
++    const-string v5, "TccCarPlayNativeMethod_iAPSendMessage"
++
++    new-array v6, v2, [Ljava/lang/Class;
++
++    const-class v7, [B
++
++    aput-object v7, v6, v1
++
++    sget-object v7, Ljava/lang/Integer;->TYPE:Ljava/lang/Class;
++
++    aput-object v7, v6, v4
++
++    invoke-virtual {v0, v5, v6}, Ljava/lang/Class;->getDeclaredMethod(Ljava/lang/String;[Ljava/lang/Class;)Ljava/lang/reflect/Method;
++
++    move-result-object v0
++
++    .line 292
++    invoke-virtual {v0, v4}, Ljava/lang/reflect/Method;->setAccessible(Z)V
++
++    .line 293
++    sput-object v0, Lcom/daudio/app/dipo/LeafiaCpHandover;->sNativeSend:Ljava/lang/reflect/Method;
++    :try_end_22
++    .catchall {:try_start_b .. :try_end_22} :catchall_23
++
++    goto :goto_38
++
++    :catchall_23
++    move-exception v0
++
++    .line 295
++    new-instance v5, Ljava/lang/StringBuilder;
++
++    invoke-direct {v5}, Ljava/lang/StringBuilder;-><init>()V
++
++    const-string v6, "Leafia: no direct iAP send, using DiPO\'s: "
++
++    invoke-virtual {v5, v6}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    invoke-virtual {v5, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
++
++    invoke-virtual {v5}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
++
++    move-result-object v0
++
++    invoke-static {v3, v0}, Landroid/util/Log;->w(Ljava/lang/String;Ljava/lang/String;)I
++
++    .line 298
++    :cond_38
++    :goto_38
++    sget-object v0, Lcom/daudio/app/dipo/LeafiaCpHandover;->sNativeSend:Ljava/lang/reflect/Method;
++
++    if-eqz v0, :cond_77
++
++    .line 300
++    :try_start_3c
++    new-instance v0, Ljava/lang/StringBuilder;
++
++    invoke-direct {v0}, Ljava/lang/StringBuilder;-><init>()V
++
++    const-string v5, "direct "
++
++    invoke-virtual {v0, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    sget-object v5, Lcom/daudio/app/dipo/LeafiaCpHandover;->sNativeSend:Ljava/lang/reflect/Method;
++
++    new-array v2, v2, [Ljava/lang/Object;
++
++    aput-object p1, v2, v1
++
++    array-length v1, p1
++
++    invoke-static {v1}, Ljava/lang/Integer;->valueOf(I)Ljava/lang/Integer;
++
++    move-result-object v1
++
++    aput-object v1, v2, v4
++
++    invoke-virtual {v5, p0, v2}, Ljava/lang/reflect/Method;->invoke(Ljava/lang/Object;[Ljava/lang/Object;)Ljava/lang/Object;
++
++    move-result-object v1
++
++    invoke-virtual {v0, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
++
++    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
++
++    move-result-object p0
++    :try_end_5e
++    .catchall {:try_start_3c .. :try_end_5e} :catchall_5f
++
++    return-object p0
++
++    :catchall_5f
++    move-exception v0
++
++    .line 302
++    new-instance v1, Ljava/lang/StringBuilder;
++
++    invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
++
++    const-string v2, "Leafia: direct iAP send failed, using DiPO\'s from now on: "
++
++    invoke-virtual {v1, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    invoke-virtual {v1, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
++
++    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
++
++    move-result-object v0
++
++    invoke-static {v3, v0}, Landroid/util/Log;->w(Ljava/lang/String;Ljava/lang/String;)I
++
++    const/4 v0, 0x0
++
++    .line 303
++    sput-object v0, Lcom/daudio/app/dipo/LeafiaCpHandover;->sNativeSend:Ljava/lang/reflect/Method;
++
++    .line 306
++    :cond_77
++    array-length v0, p1
++
++    invoke-virtual {p0, p1, v0}, Lcom/daudio/app/dipo/telechips/CarPlayService;->iAPSendMessage([BI)Lcom/daudio/app/dipo/telechips/CarPlayReturn;
++
++    move-result-object p0
++
++    return-object p0
 +.end method
 +
 +.method public static sessionFinalized(I)V
@@ -2478,17 +2898,119 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +    return-void
 +.end method
 +
++.method static startMedia(Lcom/tcc/iap2/IIap2Service;)V
++    .registers 6
++
++    const-string v0, ", telephony "
++
++    const-string v1, ", call state "
++
++    const-string v2, "now playing "
++
++    .line 242
++    new-instance v3, Ljava/lang/StringBuilder;
++
++    invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
++
++    .line 243
++    :try_start_b
++    invoke-virtual {v3, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    invoke-interface {p0}, Lcom/tcc/iap2/IIap2Service;->Iap2SvcNowPlayingStart()Z
++
++    move-result v4
++
++    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Z)Ljava/lang/StringBuilder;
++    :try_end_15
++    .catchall {:try_start_b .. :try_end_15} :catchall_16
++
++    goto :goto_1d
++
++    :catchall_16
++    move-exception v4
++
++    invoke-virtual {v3, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
++
++    .line 244
++    :goto_1d
++    :try_start_1d
++    invoke-virtual {v3, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    invoke-interface {p0}, Lcom/tcc/iap2/IIap2Service;->Iap2SvcTelephonyStartCallState()Z
++
++    move-result v2
++
++    invoke-virtual {v3, v2}, Ljava/lang/StringBuilder;->append(Z)Ljava/lang/StringBuilder;
++    :try_end_27
++    .catchall {:try_start_1d .. :try_end_27} :catchall_28
++
++    goto :goto_2f
++
++    :catchall_28
++    move-exception v2
++
++    invoke-virtual {v3, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    invoke-virtual {v3, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
++
++    .line 245
++    :goto_2f
++    :try_start_2f
++    invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    invoke-interface {p0}, Lcom/tcc/iap2/IIap2Service;->Iap2SvcTelephonyStartUpdates()Z
++
++    move-result p0
++
++    invoke-virtual {v3, p0}, Ljava/lang/StringBuilder;->append(Z)Ljava/lang/StringBuilder;
++    :try_end_39
++    .catchall {:try_start_2f .. :try_end_39} :catchall_3a
++
++    goto :goto_41
++
++    :catchall_3a
++    move-exception p0
++
++    invoke-virtual {v3, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    invoke-virtual {v3, p0}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
++
++    .line 246
++    :goto_41
++    new-instance p0, Ljava/lang/StringBuilder;
++
++    invoke-direct {p0}, Ljava/lang/StringBuilder;-><init>()V
++
++    const-string v0, "Leafia: media updates requested on the CarPlay channel: "
++
++    invoke-virtual {p0, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    invoke-virtual {p0, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/Object;)Ljava/lang/StringBuilder;
++
++    invoke-virtual {p0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
++
++    move-result-object p0
++
++    const-string v0, "LeafiaCP"
++
++    invoke-static {v0, p0}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
++
++    return-void
++.end method
++
 +.method public static toPhone([B)V
 +    .registers 4
 +
-+    .line 244
++    .line 258
 +    sget-object v0, Lcom/daudio/app/dipo/LeafiaCpHandover;->sCp:Lcom/daudio/app/dipo/telechips/CarPlayService;
 +
 +    if-eqz v0, :cond_20
 +
 +    if-eqz p0, :cond_20
 +
-+    .line 245
++    .line 259
 +    array-length v1, p0
 +
 +    if-eqz v1, :cond_20
@@ -2499,7 +3021,7 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +
 +    goto :goto_20
 +
-+    .line 246
++    .line 260
 +    :cond_e
 +    invoke-virtual {p0}, [B->clone()Ljava/lang/Object;
 +
@@ -2507,7 +3029,7 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +
 +    check-cast p0, [B
 +
-+    .line 247
++    .line 261
 +    invoke-static {}, Lcom/daudio/app/dipo/LeafiaCpHandover;->tx()Landroid/os/Handler;
 +
 +    move-result-object v1
@@ -2576,7 +3098,7 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +.end method
 diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/LeafiaCpIap2Listener.smali HKMC_DiPO.new/com/daudio/app/dipo/LeafiaCpIap2Listener.smali
 --- HKMC_DiPO.stock/com/daudio/app/dipo/LeafiaCpIap2Listener.smali	1970-01-01 00:00:00.000000000 +0000
-+++ HKMC_DiPO.new/com/daudio/app/dipo/LeafiaCpIap2Listener.smali	2026-11-02 17:24:54.399370936 +0000
++++ HKMC_DiPO.new/com/daudio/app/dipo/LeafiaCpIap2Listener.smali	2026-11-03 10:36:41.439685608 +0000
 @@ -0,0 +1,95 @@
 +.class public final Lcom/daudio/app/dipo/LeafiaCpIap2Listener;
 +.super Lcom/tcc/iap2/IIap2Listener$Stub;
@@ -2675,7 +3197,7 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +.end method
 diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/LeafiaCpRegister.smali HKMC_DiPO.new/com/daudio/app/dipo/LeafiaCpRegister.smali
 --- HKMC_DiPO.stock/com/daudio/app/dipo/LeafiaCpRegister.smali	1970-01-01 00:00:00.000000000 +0000
-+++ HKMC_DiPO.new/com/daudio/app/dipo/LeafiaCpRegister.smali	2026-11-02 17:24:54.355351574 +0000
++++ HKMC_DiPO.new/com/daudio/app/dipo/LeafiaCpRegister.smali	2026-11-03 10:36:41.906844058 +0000
 @@ -0,0 +1,546 @@
 +.class public final Lcom/daudio/app/dipo/LeafiaCpRegister;
 +.super Ljava/lang/Object;
@@ -3225,7 +3747,7 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +.end method
 diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/LeafiaCpTurn.smali HKMC_DiPO.new/com/daudio/app/dipo/LeafiaCpTurn.smali
 --- HKMC_DiPO.stock/com/daudio/app/dipo/LeafiaCpTurn.smali	1970-01-01 00:00:00.000000000 +0000
-+++ HKMC_DiPO.new/com/daudio/app/dipo/LeafiaCpTurn.smali	2026-11-02 17:24:54.463377015 +0000
++++ HKMC_DiPO.new/com/daudio/app/dipo/LeafiaCpTurn.smali	2026-11-03 10:36:41.907720940 +0000
 @@ -0,0 +1,1008 @@
 +.class public final Lcom/daudio/app/dipo/LeafiaCpTurn;
 +.super Ljava/lang/Object;
@@ -4237,7 +4759,7 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +.end method
 diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/LeafiaTbtMark.smali HKMC_DiPO.new/com/daudio/app/dipo/LeafiaTbtMark.smali
 --- HKMC_DiPO.stock/com/daudio/app/dipo/LeafiaTbtMark.smali	1970-01-01 00:00:00.000000000 +0000
-+++ HKMC_DiPO.new/com/daudio/app/dipo/LeafiaTbtMark.smali	2026-11-02 17:24:54.459406793 +0000
++++ HKMC_DiPO.new/com/daudio/app/dipo/LeafiaTbtMark.smali	2026-11-03 10:36:41.485815532 +0000
 @@ -0,0 +1,68 @@
 +.class public final Lcom/daudio/app/dipo/LeafiaTbtMark;
 +.super Ljava/lang/Object;
@@ -4308,8 +4830,8 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/Leaf
 +    return-void
 +.end method
 diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/e/b.smali HKMC_DiPO.new/com/daudio/app/dipo/e/b.smali
---- HKMC_DiPO.stock/com/daudio/app/dipo/e/b.smali	2026-11-02 17:24:53.285057953 +0000
-+++ HKMC_DiPO.new/com/daudio/app/dipo/e/b.smali	2026-11-02 17:24:54.281936867 +0000
+--- HKMC_DiPO.stock/com/daudio/app/dipo/e/b.smali	2026-11-03 10:36:40.336286390 +0000
++++ HKMC_DiPO.new/com/daudio/app/dipo/e/b.smali	2026-11-03 10:36:41.327206553 +0000
 @@ -1667,6 +1667,20 @@
  
      monitor-exit p0
@@ -4332,9 +4854,33 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/e/b.
  
      :catchall_5
 diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/e/g.smali HKMC_DiPO.new/com/daudio/app/dipo/e/g.smali
---- HKMC_DiPO.stock/com/daudio/app/dipo/e/g.smali	2026-11-02 17:24:53.281120650 +0000
-+++ HKMC_DiPO.new/com/daudio/app/dipo/e/g.smali	2026-11-02 17:24:54.277908119 +0000
-@@ -229,6 +229,13 @@
+--- HKMC_DiPO.stock/com/daudio/app/dipo/e/g.smali	2026-11-03 10:36:40.327981718 +0000
++++ HKMC_DiPO.new/com/daudio/app/dipo/e/g.smali	2026-11-03 10:36:41.322306472 +0000
+@@ -22,6 +22,23 @@
+ .method public final connected(ILjava/lang/String;)V
+     .registers 6
+ 
++    # Leafia G70: a bridged wireless iAP2 session (no serial) lets DiPO's notifications through
++    invoke-static {p1, p2}, Lcom/daudio/app/dipo/LeafiaCpHandover;->letNotify(ILjava/lang/String;)Z
++
++    move-result v0
++
++    if-eqz v0, :leafia_keep
++
++    iget-object v0, p0, Lcom/daudio/app/dipo/e/g;->mH:Lcom/daudio/app/dipo/e/a;
++
++    iget-object v0, v0, Lcom/daudio/app/dipo/e/a;->Q:Lcom/daudio/app/dipo/e/b;
++
++    const/4 v1, 0x1
++
++    invoke-static {v0, v1}, Lcom/daudio/app/dipo/e/b;->a(Lcom/daudio/app/dipo/e/b;Z)Z
++
++    :leafia_keep
++
+     const/4 v1, 0x1
+ 
+     if-nez p2, :cond_11
+@@ -229,6 +246,13 @@
  .method public final notify(IIILcom/tcc/iap2/Iap2NotiMsg;)V
      .registers 8
  
@@ -4349,8 +4895,8 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/e/g.
  
      const/high16 v0, -0x80000000
 diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/e/m.smali HKMC_DiPO.new/com/daudio/app/dipo/e/m.smali
---- HKMC_DiPO.stock/com/daudio/app/dipo/e/m.smali	2026-11-02 17:24:53.355887717 +0000
-+++ HKMC_DiPO.new/com/daudio/app/dipo/e/m.smali	2026-11-02 17:24:54.325974471 +0000
+--- HKMC_DiPO.stock/com/daudio/app/dipo/e/m.smali	2026-11-03 10:36:40.495338309 +0000
++++ HKMC_DiPO.new/com/daudio/app/dipo/e/m.smali	2026-11-03 10:36:41.373411033 +0000
 @@ -388,8 +388,65 @@
  .end method
  
@@ -4444,8 +4990,8 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/e/m.
  
      move-result v0
 diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/e/u.smali HKMC_DiPO.new/com/daudio/app/dipo/e/u.smali
---- HKMC_DiPO.stock/com/daudio/app/dipo/e/u.smali	2026-11-02 17:24:53.325263540 +0000
-+++ HKMC_DiPO.new/com/daudio/app/dipo/e/u.smali	2026-11-02 17:24:54.302064655 +0000
+--- HKMC_DiPO.stock/com/daudio/app/dipo/e/u.smali	2026-11-03 10:36:40.423069643 +0000
++++ HKMC_DiPO.new/com/daudio/app/dipo/e/u.smali	2026-11-03 10:36:41.348587175 +0000
 @@ -438,6 +438,9 @@
  
      check-cast v0, Lcom/daudio/app/dipo/e/v;
@@ -4477,9 +5023,23 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/e/u.
      :try_start_0
      iget-object v0, p0, Lcom/daudio/app/dipo/e/u;->Ab:Ljava/util/concurrent/Semaphore;
  
+@@ -4010,11 +4018,8 @@
+     goto :goto_3c
+ 
+     :cond_92
+-    invoke-virtual {v5}, [I->clone()Ljava/lang/Object;
+-
+-    move-result-object v0
+-
+-    check-cast v0, [I
++    # Leafia G70: the maneuver index goes into maneuverIndex[] itself, not a copy of it
++    move-object v0, v5
+ 
+     move-object v1, p1
+ 
 diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/f/b.smali HKMC_DiPO.new/com/daudio/app/dipo/f/b.smali
---- HKMC_DiPO.stock/com/daudio/app/dipo/f/b.smali	2026-11-02 17:24:52.359303455 +0000
-+++ HKMC_DiPO.new/com/daudio/app/dipo/f/b.smali	2026-11-02 17:24:54.524245432 +0000
+--- HKMC_DiPO.stock/com/daudio/app/dipo/f/b.smali	2026-11-03 10:36:38.623796847 +0000
++++ HKMC_DiPO.new/com/daudio/app/dipo/f/b.smali	2026-11-03 10:36:41.559491704 +0000
 @@ -119,3 +119,46 @@
  
      goto :goto_b
@@ -4528,8 +5088,8 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/f/b.
 +    goto :ret_leafia_b
 +.end method
 diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/i/e.smali HKMC_DiPO.new/com/daudio/app/dipo/i/e.smali
---- HKMC_DiPO.stock/com/daudio/app/dipo/i/e.smali	2026-11-02 17:24:52.423629561 +0000
-+++ HKMC_DiPO.new/com/daudio/app/dipo/i/e.smali	2026-11-02 17:24:54.185322816 +0000
+--- HKMC_DiPO.stock/com/daudio/app/dipo/i/e.smali	2026-11-03 10:36:38.747023974 +0000
++++ HKMC_DiPO.new/com/daudio/app/dipo/i/e.smali	2026-11-03 10:36:41.233151344 +0000
 @@ -8040,11 +8040,10 @@
  
      const/16 v2, 0x3e7
@@ -4546,7 +5106,7 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/i/e.
  
 diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/service/LeafiaDipoStart.smali HKMC_DiPO.new/com/daudio/app/dipo/service/LeafiaDipoStart.smali
 --- HKMC_DiPO.stock/com/daudio/app/dipo/service/LeafiaDipoStart.smali	1970-01-01 00:00:00.000000000 +0000
-+++ HKMC_DiPO.new/com/daudio/app/dipo/service/LeafiaDipoStart.smali	2026-11-02 17:24:53.754100550 +0000
++++ HKMC_DiPO.new/com/daudio/app/dipo/service/LeafiaDipoStart.smali	2026-11-03 10:36:42.031922964 +0000
 @@ -0,0 +1,151 @@
 +.class public final Lcom/daudio/app/dipo/service/LeafiaDipoStart;
 +.super Ljava/lang/Object;
@@ -4700,8 +5260,8 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/serv
 +    return-void
 +.end method
 diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/service/q.smali HKMC_DiPO.new/com/daudio/app/dipo/service/q.smali
---- HKMC_DiPO.stock/com/daudio/app/dipo/service/q.smali	2026-11-02 17:24:52.675856401 +0000
-+++ HKMC_DiPO.new/com/daudio/app/dipo/service/q.smali	2026-11-02 17:24:53.775547235 +0000
+--- HKMC_DiPO.stock/com/daudio/app/dipo/service/q.smali	2026-11-03 10:36:39.247578139 +0000
++++ HKMC_DiPO.new/com/daudio/app/dipo/service/q.smali	2026-11-03 10:36:42.048553474 +0000
 @@ -1466,6 +1466,15 @@
  
      move-result-object v1
@@ -4719,8 +5279,8 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/serv
  
      move-result-object v1
 diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/telechips/CarPlayService$1iAPSendMessage.smali HKMC_DiPO.new/com/daudio/app/dipo/telechips/CarPlayService$1iAPSendMessage.smali
---- HKMC_DiPO.stock/com/daudio/app/dipo/telechips/CarPlayService$1iAPSendMessage.smali	2026-11-02 17:24:52.848984746 +0000
-+++ HKMC_DiPO.new/com/daudio/app/dipo/telechips/CarPlayService$1iAPSendMessage.smali	2026-11-02 17:24:54.720696339 +0000
+--- HKMC_DiPO.stock/com/daudio/app/dipo/telechips/CarPlayService$1iAPSendMessage.smali	2026-11-03 10:36:39.539542170 +0000
++++ HKMC_DiPO.new/com/daudio/app/dipo/telechips/CarPlayService$1iAPSendMessage.smali	2026-11-03 10:36:41.732334666 +0000
 @@ -158,39 +158,16 @@
  .end method
  
@@ -4764,8 +5324,8 @@ diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/tele
  
  
 diff -ruN --strip-trailing-cr -I '^ *#' HKMC_DiPO.stock/com/daudio/app/dipo/telechips/CarPlayService.smali HKMC_DiPO.new/com/daudio/app/dipo/telechips/CarPlayService.smali
---- HKMC_DiPO.stock/com/daudio/app/dipo/telechips/CarPlayService.smali	2026-11-02 17:24:52.967712394 +0000
-+++ HKMC_DiPO.new/com/daudio/app/dipo/telechips/CarPlayService.smali	2026-11-02 17:24:54.661205563 +0000
+--- HKMC_DiPO.stock/com/daudio/app/dipo/telechips/CarPlayService.smali	2026-11-03 10:36:39.781264436 +0000
++++ HKMC_DiPO.new/com/daudio/app/dipo/telechips/CarPlayService.smali	2026-11-03 10:36:41.679193100 +0000
 @@ -7161,6 +7161,9 @@
  .method public onSessionFinalized(I)V
      .registers 6

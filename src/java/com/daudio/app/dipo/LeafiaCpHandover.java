@@ -226,11 +226,25 @@ public final class LeafiaCpHandover {
             sRouteTries++;
             if (ok || sRouteTries >= ROUTE_TRIES) {
                 Log.i(TAG, "Leafia: route guidance restarted on the CarPlay channel: " + ok + " (try " + sRouteTries + ")");
+                if (ok) startMedia(s);
             } else {
                 tx().postDelayed(this, ROUTE_RETRY_MS);
             }
         }
     };
+
+    /**
+     * DiPO's setStartiAP2Service asks the iPhone for now playing and call state only on USB
+     * (transport 1, wireless, skips them), so a wireless session never sent the music info the
+     * cluster/HUD shows. Ask for them once the CarPlay-channel session takes route guidance.
+     */
+    static void startMedia(IIap2Service s) {
+        StringBuilder r = new StringBuilder();
+        try { r.append("now playing ").append(s.Iap2SvcNowPlayingStart()); } catch (Throwable t) { r.append("now playing ").append(t); }
+        try { r.append(", call state ").append(s.Iap2SvcTelephonyStartCallState()); } catch (Throwable t) { r.append(", call state ").append(t); }
+        try { r.append(", telephony ").append(s.Iap2SvcTelephonyStartUpdates()); } catch (Throwable t) { r.append(", telephony ").append(t); }
+        Log.i(TAG, "Leafia: media updates requested on the CarPlay channel: " + r);
+    }
 
     public static void iap2Disconnected(int component) {
         if (component == COMPONENT_CARPLAY_CLIENT && sClientUp) {
@@ -248,7 +262,7 @@ public final class LeafiaCpHandover {
             @Override
             public void run() {
                 try {
-                    Object r = cp.iAPSendMessage(b, b.length);
+                    Object r = send(cp, b);
                     sSent++;
                     if (sSent <= 3 || sSent % 200 == 0) Log.i(TAG, "Leafia: CarPlay-channel iAP2 sent " + b.length + " bytes (#" + sSent + ", " + r + ")");
                 } catch (Throwable t) {
@@ -257,6 +271,39 @@ public final class LeafiaCpHandover {
                 }
             }
         });
+    }
+
+    static java.lang.reflect.Method sNativeSend;
+    static boolean sNativeTried;
+
+    /**
+     * One message to the iPhone, in order. DiPO's iAPSendMessage in its non-blocking mode
+     * starts a new thread per message, so two quick iAP2 packets can reach the library out
+     * of order (the iAP2 link then drops them and waits for a resend). This already runs
+     * on its own thread, so call the library's send directly
+     * (CarPlayService.TccCarPlayNativeMethod_iAPSendMessage, 0 = OK); DiPO's method is the
+     * fallback.
+     */
+    static Object send(CarPlayService cp, byte[] b) {
+        if (!sNativeTried) {
+            sNativeTried = true;
+            try {
+                java.lang.reflect.Method m = CarPlayService.class.getDeclaredMethod("TccCarPlayNativeMethod_iAPSendMessage", byte[].class, int.class);
+                m.setAccessible(true);
+                sNativeSend = m;
+            } catch (Throwable t) {
+                Log.w(TAG, "Leafia: no direct iAP send, using DiPO's: " + t);
+            }
+        }
+        if (sNativeSend != null) {
+            try {
+                return "direct " + sNativeSend.invoke(cp, b, b.length);
+            } catch (Throwable t) {
+                Log.w(TAG, "Leafia: direct iAP send failed, using DiPO's from now on: " + t);
+                sNativeSend = null;
+            }
+        }
+        return cp.iAPSendMessage(b, b.length);
     }
 
     /** The bridge's iAP2 listener: notification 0x51 (CarplayClientTransportData) */
@@ -276,10 +323,68 @@ public final class LeafiaCpHandover {
         }
     }
 
-    /** DiPO's iAP2 listener: the CarPlay-channel session's identification isn't a new phone */
-    public static boolean dropNoti(int what) {
-        return sClient && (what == NOTI_IDENTIFICATION_ACCEPTED || what == NOTI_TRANSPORT_IDENTIFIER);
+    /**
+     * DiPO's iAP2 listener (e/g.connected): the iAP2 server reports wireless sessions with no
+     * device serial, and DiPO then skips its whole connect path, including the flag that lets
+     * notifications (route guidance among them) through. True when this connect is a bridged
+     * wireless session (the iPhone's Bluetooth link, or the CarPlay-channel session) that
+     * succeeded, so DiPO sets that flag (only that: its new-device path with a serial would
+     * restart the iAP2 server's main loop).
+     * The first argument is the iAP2 component, not a result: the server's onSendConnected
+     * passes getComponent() (0 when the connect failed): 1 USB, 4 our Bluetooth link,
+     * 5 the CarPlay-channel session.
+     */
+    public static boolean letNotify(int component, String serial) {
+        if (serial != null) {
+            sForced = false;   // DiPO's own (USB) connect: stock behaviour
+            return false;
+        }
+        boolean ok = (component == COMPONENT_BT || component == COMPONENT_CARPLAY_CLIENT)
+                && (LeafiaCpBridge.sessionDevice() != null || sClient);
+        if (ok) {
+            sForced = true;
+            sSeen.clear();   // log this session's notifications afresh
+            Log.i(TAG, "Leafia: wireless iAP2 session connected (component " + component + "): DiPO route guidance on"
+                    + (sClient ? " (CarPlay channel)" : ""));
+        } else {
+            Log.i(TAG, "Leafia: iAP2 connect component " + component + " without a serial, not a bridged session");
+        }
+        return ok;
     }
+
+    /** DiPO's notifications were turned on by letNotify (a bridged wireless session) */
+    static volatile boolean sForced;
+    /** DiPO's iAP2 notification numbers for route guidance (e/e: 0x78 update, 0x79 maneuver, 0x7a lanes) */
+    static final int NOTI_ROUTE_GUIDANCE = 0x78, NOTI_ROUTE_MANEUVER = 0x79, NOTI_LANE_GUIDANCE = 0x7a;
+
+    /**
+     * The data notifications a bridged wireless session passes to DiPO (e/e.handleMessage):
+     * telephony 30-32, now playing 36-38 (media, playback, artwork: the cluster/HUD music
+     * info) and route guidance 0x78-0x7a. The rest stay out: 0/24 identification and
+     * transport id (new-device handling), 25 USB device info, 10/11/15/16 session callbacks.
+     */
+    static boolean dataNoti(int what) {
+        return (what >= 30 && what <= 32) || (what >= 36 && what <= 38)
+                || what == NOTI_ROUTE_GUIDANCE || what == NOTI_ROUTE_MANEUVER || what == NOTI_LANE_GUIDANCE;
+    }
+
+    /**
+     * DiPO's iAP2 listener: the CarPlay-channel session's identification isn't a new phone;
+     * and when letNotify turned notifications on, only data notifications get through (before,
+     * DiPO saw no notifications at all from a wireless session, and its USB paths, such as
+     * the transport identifier's new-device handling, must not run for one).
+     */
+    public static boolean dropNoti(int what) {
+        boolean drop = (sClient && (what == NOTI_IDENTIFICATION_ACCEPTED || what == NOTI_TRANSPORT_IDENTIFIER))
+                || (sForced && !dataNoti(what));
+        if (sSeen.add(what))
+            Log.i(TAG, "Leafia: first iAP2 notification " + what + (drop ? " (kept from DiPO)" : " (to DiPO)")
+                    + " forced=" + sForced + " client=" + sClient);
+        return drop;
+    }
+
+    /** notification numbers already logged once (so the drive log shows what arrived) */
+    static final java.util.Set<Integer> sSeen = java.util.Collections.synchronizedSet(new java.util.HashSet<Integer>());
 
     static void flush(IIap2Service s) {
         ArrayList<byte[]> all;

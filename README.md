@@ -1,7 +1,7 @@
 # Leafia Plus — Genesis G70 Bridge
 
-Wireless Android Auto, wireless CarPlay and Android Auto turn-by-turn on the
-cluster/HUD for the **2022 Genesis G70** head unit, as a reversible
+Wireless Android Auto and wireless CarPlay, with turn-by-turn from both on the
+cluster/HUD, for the **2022 Genesis G70** head unit, as a reversible
 [NEMESIS](https://github.com/xwtk/hmg_nemesis) package. It builds on
 [HMG Leafia Plus](https://github.com/VysseCodes/HMG-Leafia-Plus), which had no
 patch set for this car's firmware, so every patch here was ported to it.
@@ -9,10 +9,11 @@ patch set for this car's firmware, so every patch here was ported to it.
 > Unofficial. Not affiliated with Hyundai, Kia, Genesis, Google, Apple, the
 > NEMESIS project or HMG Leafia Plus. You use it at your own risk.
 
-## Status (v0.96)
+## Status (v1.0)
 
-v0.96 has the same features as v0.95 ("update 15"). What's new is who can install
-it: any head unit whose stock files match, not only one firmware version (see
+v1.0 ("update 20") completes the CarPlay integration: Apple Maps turn-by-turn and
+the now-playing track reach the cluster and HUD over wireless CarPlay. As since
+v0.96, it installs on any head unit whose stock files match (see
 [Compatibility](#compatibility)).
 
 | Feature | State |
@@ -27,7 +28,9 @@ it: any head unit whose stock files match, not only one firmware version (see
 | Android Auto reconnect after walking away with the car running | Fix included (a stale session for the same phone is ended so it can reconnect); not yet confirmed on the car |
 | Car navigation's own turn frames muted while the phone guides | Works; its speed-camera / trap frames still pass |
 | Side roads drawn behind the arrow (Android Auto) | **Not yet**: the phone doesn't send them; planned from the car's map data |
-| CarPlay turn-by-turn on the cluster and HUD | **In progress**: route guidance has to move into the CarPlay session when the iPhone drops Bluetooth. v0.95 adds that handover and fixes a stock DiPO bug that sent every message on that channel empty; not yet working on the car. Full CarPlay integration is the next milestone |
+| CarPlay turn-by-turn on the cluster and HUD | Works (new in v1.0): Apple Maps turns with the distance. Tested parked and on short routes; rerouting not yet tested on the car |
+| CarPlay now playing on the cluster and HUD | Works (new in v1.0): track title and changes |
+| CarPlay call state on the cluster | Requested from the iPhone; not yet tested on the car |
 
 Joining another Wi-Fi network from the car's settings turns off the hotspot that
 wireless Android Auto and CarPlay use; restart the head unit to get it back.
@@ -65,7 +68,7 @@ and must match the tested build's checksum.
 
 ## Install
 
-1. Download the release zip (`G70-Bridge-v0.96.zip`) and unzip it onto the root
+1. Download the release zip (`G70-Bridge-v1.0.zip`) and unzip it onto the root
    of the USB drive. You should have `NEMESIS.data` and
    `packages/g70.carplay.bt.zip` at the top level. Do not unzip
    `g70.carplay.bt.zip` itself.
@@ -93,7 +96,7 @@ diffs against the stock apps.
 
 | Part | Change |
 |---|---|
-| `HKMC_DiPO` (CarPlay) | Bluetooth→iAP2 bridge, starts the CarPlay engine for wireless, audio source and focus, turn-by-turn gate opened, iPhone in the device list, iAP2 handover into the CarPlay session, drawn turns, stock iAP send-length bug fixed |
+| `HKMC_DiPO` (CarPlay) | Bluetooth→iAP2 bridge, starts the CarPlay engine for wireless, audio source and focus, iAP2 notifications let through for wireless sessions, iPhone in the device list, iAP2 handover into the CarPlay session, now playing and call state requested over wireless, drawn turns; stock bugs fixed: iAP send length, maneuver index |
 | `Iap2ServerApp` | Starts/ends the iAP2 session on the Bluetooth transport; advertises route guidance |
 | `HKMC_GPM` (Android Auto) | Stuck-session, USB-drive and same-phone reconnect fixes; turn-by-turn sent straight to the cluster (port of HMG-API's AaTurns) with drawn turns, street name, lanes, smooth count-down |
 | `HKMC_Navi_ExSL` (car navigation) | Skips its turn frames while the phone guides; logs what it sends to the cluster (diagnostics) |
@@ -120,6 +123,12 @@ docs/             technical notes
 `tools/probe` is a read-only NEMESIS script that writes logs to the USB drive.
 Its output contains your phone names, Bluetooth addresses and vehicle data:
 **don't post it publicly**.
+
+By default it collects logs only, gzipped (a few MB). A file named
+`G70PROBE-FULL` on the drive root makes it also copy the stock apps and
+libraries a port needs (about 70 MB). Its first run after a head-unit restart
+starts a background logger that records until the next restart. To capture a
+test, run the probe once before it and again afterwards.
 
 ## Licence and credits
 

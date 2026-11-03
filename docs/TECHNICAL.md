@@ -113,10 +113,41 @@ camera frames still pass.
   become drawn turns, with the direction from the exit angle and side roads
   from the junction's road angles; plus the HUD distance.
 
+## v1.0 (update 20): CarPlay turn-by-turn and now playing
+
+Four things stood between the iPhone's route guidance and the cluster on a
+wireless session; v1.0 fixes all of them (`LeafiaCpHandover`, `hooks16_dipo.py`,
+`hooks19_dipo.py`).
+
+- **DiPO's notification gate.** DiPO's iAP2 listener (`e/g`) passes
+  notifications on only while its notify flag is set, and only a connect with a
+  device serial sets it. The iAP2 server reports wireless sessions without a
+  serial, so every notification was dropped. The hook sets the flag for a
+  bridged wireless session. The first argument of `IIap2Listener.connected` is
+  the iAP2 **component** (`Iap2Service.onSendConnected` passes `getComponent()`:
+  1 USB, 4 the Bluetooth link, 5 the CarPlay channel), not a result code.
+- **Which notifications reach DiPO.** For a bridged session, only data
+  notifications pass: telephony (30-32), now playing (36-38) and route guidance
+  (0x78-0x7a). Identification (0), transport identifier (24), USB device info
+  (25) and the session callbacks (10/11/15/16) stay out, because they drive
+  DiPO's USB new-device path. Each notification number is logged once per
+  session (`Leafia: first iAP2 notification N`).
+- **Now playing and call state.** DiPO's `setStartiAP2Service` asks the iPhone
+  for now playing and call state only on USB; wireless (transport 1) skips them.
+  The handover requests them on the CarPlay channel once route guidance is
+  accepted.
+- **Stock maneuver-index bug.** `e/u.d` (analyze_ManeuverUpdate) has
+  `GetComponentIdsFromManeuverMsg` inlined. It writes the maneuver index into a
+  clone of `maneuverIndex[]` and then checks the original, still -1, so every
+  RouteGuidanceManeuverUpdate was dropped and `updateTBTInfo` never found the
+  current maneuver. `hooks19_dipo.py` writes into the array itself.
+- The CarPlay-channel send uses the library's native `iAPSendMessage` directly
+  (in order), instead of DiPO's thread-per-message send, which could reorder
+  messages.
+
 ## Open items
 
-- **CarPlay turn-by-turn**: confirm the handover session comes up on the car
-  now that messages carry their length.
+- **CarPlay**: rerouting and call state not yet tested on the car.
 - **Side roads for Android Auto**: the phone doesn't send them; match the car's
   ADASIS map stream to the route.
 - The angle sign for CarPlay side roads (`persist.leafia.g70.cpangle`).

@@ -19,7 +19,12 @@ say() { echo "$1" >> "$LOG"; }
 section() { say ""; say "===== $1"; }
 grab() { if cp "$1" "$2" 2>/dev/null; then say "ok   $1"; else say "FAIL $1"; fi; }
 
-say "g70-probe 1"
+# logs only by default (a few MB). The stock app/library copies, launcher and vehicle survey
+# (~70 MB) run only when a file named G70PROBE-FULL is on the drive root.
+FULL=0
+[ -e "$(pwd)/G70PROBE-FULL" ] && FULL=1
+
+say "g70-probe 2 (full=$FULL)"
 say "date $(date)"
 say "id $(id)"
 
@@ -42,7 +47,7 @@ else
     rm -f "$BGDIR"/logcat.txt* 2>/dev/null
     # hostapd logs a status line every second; leave it out to keep more history
     # one append-only file (this logcat ignores -r/-n); a guard moves it aside past 100 MB
-    logcat -v time hostapd:S bt-hci:S CoNA:S BluetoothAdapterService:S BluetoothAdapter:S TPEGHDRadioController:S LocalBluetoothManager:S CachedBluetoothDevice:S JNI_Layer:S UserProfileService:S BufferQueue:S Java_Layer:S HereFuelDecoder:S HereImageDecoder:S bt-btif:S audio_a2dp_hw:S ExSL:S BluetoothA2dp:S SystemService:S BTCMListenerManager:S BluetoothUtils:S SXM65HD:S RDO_MICOM_CMD_EVENT:S RadioService:S HDBandScan:S MicomD:S >> "$BGDIR/logcat.txt" 2>/dev/null &
+    logcat -v time hostapd:S bt-hci:S CoNA:S BluetoothAdapterService:S BluetoothAdapter:S TPEGHDRadioController:S LocalBluetoothManager:S CachedBluetoothDevice:S JNI_Layer:S UserProfileService:S BufferQueue:S Java_Layer:S HereFuelDecoder:S HereImageDecoder:S bt-btif:S audio_a2dp_hw:S ExSL:S BluetoothA2dp:S SystemService:S BTCMListenerManager:S BluetoothUtils:S SXM65HD:S RDO_MICOM_CMD_EVENT:S RadioService:S HDBandScan:S MicomD:S CompassLogRightSideScreen:S SplitScreenViewCompass:S HDAASDataTransfer:S HDDecoder:S HKMC_RadioNA:S TimePolicyManager:S >> "$BGDIR/logcat.txt" 2>/dev/null &
     _lp=$!
     echo $_lp > "$BGDIR/pid"
     (
@@ -95,6 +100,7 @@ section "services"
 service list > "$OUT/services.txt" 2>&1
 grep -iE "iap|bt|blue|dipo|carplay" "$OUT/services.txt" >> "$LOG"
 
+if [ $FULL = 1 ]; then
 section "receivers for the SPP connect request"
 dumpsys package r > "$OUT/receivers.txt" 2>&1
 grep -n -A4 -E "START_SPP_CONNECT_FOR_CONNECTIVITY|REQUEST_CONNECT_SPP|iap2.start|telechips.android.iap2" "$OUT/receivers.txt" >> "$LOG"
@@ -146,6 +152,7 @@ done
 for f in /system/etc/bluetooth/*; do
     [ -f "$f" ] && grab "$f" "$OUT/etc/"
 done
+fi
 
 section "wireless Android Auto"
 # hotspot settings without the passphrase
@@ -189,6 +196,7 @@ grep -iE "AAProjection|GalReceiver|WirelessExplorer|HfDeviceBTCMSppApi|BTCM|GPM|
 # Read-only vehicle signal survey: every zero-argument get*/is* call on the car's
 # vehicle services (list made off-car from the framework's AIDL stubs). Each call
 # gets 3 s; a stuck service is killed so the probe always finishes.
+if [ $FULL = 1 ]; then
 section "vehicle signal survey"
 _vs="$(pwd)/vsurvey-calls.txt"
 [ -f "$_vs" ] || _vs="$(pwd)/_g70-probe/vsurvey-calls.txt"
@@ -225,6 +233,7 @@ md5 /system/app/Launcher_WP3.* /system/app/HKMC_HomeSetting_WP.* >> "$LOG" 2>&1
 for d in /data/data/com.android.launcher3/databases /data/data/com.android.launcher3/shared_prefs; do
     [ -d "$d" ] && { mkdir -p "$OUT/launcher/${d##*/}"; cp "$d"/* "$OUT/launcher/${d##*/}/" 2>/dev/null; say "copied $d"; }
 done
+fi
 
 section "Snorkel LEDs (g70.snorkel)"
 ls -l /system/app/SnorkelWeb.apk >> "$LOG" 2>&1
@@ -245,6 +254,21 @@ if [ -f "$(pwd)/_g70-engine-probe/NEMESIS.sh" ]; then
     say "running _g70-engine-probe"
     ( /system/bin/sh "$(pwd)/_g70-engine-probe/NEMESIS.sh" ) >> "$LOG" 2>&1
 fi
+section "compress"
+# the big logs go out gzipped; the filtered logs above stay plain text. If gzip leaves the
+# original behind, the plain file is kept and the .gz dropped.
+rmdir "$OUT/app" "$OUT/lib" "$OUT/bin" "$OUT/etc" "$OUT/rc" 2>/dev/null
+for f in "$OUT"/bglog/logcat.txt* "$OUT/logcat-full.txt" "$OUT/logcat-events.txt" "$OUT/dmesg.txt" "$OUT/receivers.txt"; do
+    case "$f" in *.gz) continue ;; esac
+    [ -f "$f" ] || continue
+    gzip "$f" 2>/dev/null
+    if [ -f "$f" ]; then
+        rm -f "$f.gz" 2>/dev/null
+        say "kept plain ${f##*/}"
+    else
+        say "gzip ${f##*/}"
+    fi
+done
 say ""
 say "end"
 sync
