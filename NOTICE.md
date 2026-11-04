@@ -18,7 +18,8 @@ The Android Auto turn-by-turn classes in `src/java/com/google/android/projection
 (`LeafiaAa`, `LeafiaAaTurns`, `LeafiaCluster`) are a port of HMG-API's AaTurns and
 cluster hook (https://github.com/VysseCodes/HMG-API, by VysseCodes) to this car's
 GPM, and remain under the AGPL-3.0. The CarPlay iAP2 handover
-(`LeafiaCpHandover`) follows HMG-API's wireless CarPlay bridge design.
+(`LeafiaCpHandover`) follows HMG-API's wireless CarPlay bridge design. The CarPlay lane guidance
+(`LeafiaCpLane`) is a port of HMG-API's CpTurns lanes and remains under the AGPL-3.0.
 
 ## HMG Leafia Plus (GPL-3.0)
 

@@ -10,9 +10,12 @@ v1.1 it is **standalone**: HMG Leafia Plus does not need to be installed.
 > Unofficial. Not affiliated with Hyundai, Kia, Genesis, Google, Apple, the
 > NEMESIS project or HMG Leafia Plus. You use it at your own risk.
 
-## Status (v1.2)
+## Status (v1.3)
 
-v1.2 is **one package for several firmwares**. It carries a separate build for
+v1.3 brings **wireless CarPlay back by itself** after a drop (engine off and on, or
+walking away and coming back), **CarPlay lane guidance** on the cluster and HUD, and the
+drawn CarPlay turns on the 260507 firmware. Since v1.2 it is **one package for several
+firmwares**. It carries a separate build for
 each supported G70 firmware and uses the one made for exactly your head unit's
 files (see [Compatibility](#compatibility)):
 
@@ -20,7 +23,7 @@ files (see [Compatibility](#compatibility)):
 |---|---|
 | `IKFL.USA.0000.V014.011.251120` | the original build, tested on a car |
 | `IKFL.USA.0000.V014.010.250818` | port, tested on a car |
-| `IKFL.USA.0000.V015.012.260507` (2026.07 update) | port, new in v1.2, tested on a car |
+| `IKFL.USA.0000.V015.012.260507` (2026.07 update) | port (v1.2), tested on a car |
 
 What matters is the firmware, not the model year: any head unit whose files match one of
 these builds byte for byte can install it.
@@ -45,6 +48,8 @@ turn-by-turn and the now-playing track to the cluster and HUD.
 | CarPlay turn-by-turn on the cluster and HUD | Works (new in v1.0): Apple Maps turns with the distance. Tested parked and on short routes; rerouting not yet tested on the car |
 | CarPlay now playing on the cluster and HUD | Works (new in v1.0): track title and changes |
 | CarPlay call state on the cluster | Requested from the iPhone; not yet tested on the car |
+| CarPlay lane guidance on the cluster and HUD | New in v1.3: the iPhone's lanes as the car's own lane strip (up to 8 lanes, the lanes to use highlighted); not yet confirmed on the car |
+| Wireless CarPlay reconnects by itself | New in v1.3. Engine off and on: confirmed on the car. Walking away and coming back: the car looks for the iPhone again every 30 s for 10 minutes; not yet confirmed on the car |
 | Speed / red-light camera alerts on the HUD | Moved out of the bridge in v1.2; coming back as a separate add-on |
 | Standalone wireless setup (no HMG Leafia Plus) | New in v1.1; tested in the mock head unit on factory files and confirmed on a second G70 |
 
@@ -89,14 +94,14 @@ files and must match the tested build's checksum.
 
 ## Install
 
-1. Download the release zip (`G70-Bridge-v1.2.zip`) and unzip it onto the root
+1. Download the release zip (`G70-Bridge-v1.3.zip`) and unzip it onto the root
    of the USB drive. You should have `NEMESIS.data` and
    `packages/g70.carplay.bt.zip` at the top level. Do not unzip
    `g70.carplay.bt.zip` itself.
 2. Plug the drive into the car with the head unit on.
 3. If an earlier build of this package is installed, NEMESIS first offers
-   **uninstall**: accept it. Then accept **install**. (v1.2 can also install
-   straight over v1.1 and the earlier builds for the other two firmwares.)
+   **uninstall**: accept it. Then accept **install**. (v1.3 can also install
+   straight over v1.2, v1.1 and the earlier builds for the other two firmwares.)
 4. The head unit restarts. The first start after an install can take a few
    minutes, and Bluetooth may show "initializing" for a while; that is the apps
    being optimised once.
@@ -127,7 +132,7 @@ smali diffs against each firmware's stock apps.
 
 | Part | Change |
 |---|---|
-| `HKMC_DiPO` (CarPlay) | Bluetooth→iAP2 bridge, starts the CarPlay engine for wireless, audio source and focus, iAP2 notifications let through for wireless sessions, iPhone in the device list, iAP2 handover into the CarPlay session, now playing and call state requested over wireless, drawn turns; stock bugs fixed: iAP send length, maneuver index |
+| `HKMC_DiPO` (CarPlay) | Bluetooth→iAP2 bridge, starts the CarPlay engine for wireless, audio source and focus, iAP2 notifications let through for wireless sessions, iPhone in the device list, iAP2 handover into the CarPlay session, now playing and call state requested over wireless, drawn turns, lane guidance, the iPhone reported to the car's Bluetooth manager as its wireless CarPlay phone (so it reconnects) and a reconnect retry after a dropped session; stock bugs fixed: iAP send length, maneuver index |
 | `Iap2ServerApp` | Starts/ends the iAP2 session on the Bluetooth transport; advertises route guidance |
 | `HKMC_GPM` (Android Auto) | Stuck-session, USB-drive and same-phone reconnect fixes; turn-by-turn sent straight to the cluster (port of HMG-API's AaTurns) with drawn turns, street name, lanes, smooth count-down |
 | `HKMC_Navi_ExSL` (car navigation) | Skips its turn frames while the phone guides; logs what it sends to the cluster (diagnostics) |

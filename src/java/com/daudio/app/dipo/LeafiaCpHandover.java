@@ -110,6 +110,12 @@ public final class LeafiaCpHandover {
                 @Override
                 public void run() {
                     LeafiaCpRegister.connected(phone);
+                    // so the car's Bluetooth manager pages this iPhone again after a drop
+                    try {
+                        LeafiaCpReconnect.report(context(), phone);
+                    } catch (Throwable t) {
+                        Log.w(TAG, "Leafia: CarPlay reconnect: no context: " + t);
+                    }
                 }
             });
         }
@@ -132,6 +138,12 @@ public final class LeafiaCpHandover {
                 @Override
                 public void run() {
                     LeafiaCpRegister.ended(phone);
+                    // walked away: the car sees no lost link, so have it look for the iPhone
+                    try {
+                        LeafiaCpReconnect.sessionEnded(context(), phone);
+                    } catch (Throwable t) {
+                        Log.w(TAG, "Leafia: CarPlay reconnect: no context: " + t);
+                    }
                 }
             });
         }

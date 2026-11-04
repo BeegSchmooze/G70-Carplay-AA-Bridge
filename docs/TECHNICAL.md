@@ -233,3 +233,32 @@ commands only.
   from v1.1, the 250818 bridge and both 260507 builds; every uninstall byte-identical) and
   `tools/port/mock_compat.sh` (the compatibility check names the right set, or the closest set
   and the files that differ).
+
+## v1.3: CarPlay reconnects by itself, CarPlay lane guidance
+
+- Why CarPlay didn't come back (engine off and on, or walking away): the car's Bluetooth
+  connection manager (BTCM, Bluetooth.apk) leaves the CarPlay iPhone out of its normal
+  hands-free auto-connect ("btcmIsSameCarPlayDevice") and reconnects it through its wireless
+  CarPlay path instead, which only knows a device once the CarPlay side reports a successful
+  wireless connection (`mAutoConnectedWCPDevAddr`). Units built with wireless CarPlay report it;
+  the US G70 never did, and the bridge starts CarPlay its own way, so BTCM never learned the
+  iPhone. `LeafiaCpReconnect.report` (from `LeafiaCpHandover.sessionStarted`, every wireless
+  session): `HfDeviceBTCMManager.getLocalBTCMManager(ctx).IbtcmSetWPPConectionResult(address, 1, 0)`
+  -> BTCMSM_SET_SPP_AUTO_CONNECTION_SUCCESS. BTCM's own auto-connect on wake then pages the
+  iPhone (confirmed on the car).
+- Walking away only drops the Wi-Fi session (BTCM itself disconnects the iPhone's Bluetooth once
+  CarPlay runs on Wi-Fi), so BTCM sees no lost link and never starts its auto-connect.
+  `LeafiaCpReconnect.sessionEnded` (from `sessionFinalized`) asks for it
+  (`IbtcmDoDriveAutoConnection`, the start-up auto-connect) every 30 s for up to 20 tries, until
+  the iPhone is connected again or a session starts; a round is skipped while BTCM is paging.
+  Off switch for both: `persist.leafia.g70.cpreconnect=0`.
+- Lane guidance: stock DiPO `e/u.e(Object)` only logs the iPhone's LaneGuidanceInformation.
+  `LeafiaCpLane` (port of HMG-API CpTurns.lanes) sends it as the cluster's 0xF1 lane frame (up to
+  8 lanes, status 2 = use, up to 3 arrows per lane from the lane angles), using e/u's cluster
+  handed over by `LeafiaCpTurn.updateTBTInfo`; cleared from `e/u.nS` (stopTurnByTurn) and
+  `e/u.disconnected`. Hooks: `src/hooks/hooks20_dipo.py` (methods found by signature and their
+  stock log string; same names on 251120, 250818 and 260507).
+- 260507 renamed DiPO's maneuver fields (e/v Dv..DG -> DK..DV, class otherwise identical), which
+  `LeafiaCpTurn` reads by reflection: on 260507 CarPlay turns fell back to DiPO's icons. It now
+  tries both names ("Dx|DM", "DD|DS", "DF|DU", "DE|DT"). Reflection isn't seen by check_refs:
+  names used by reflection are checked by hand on every port.

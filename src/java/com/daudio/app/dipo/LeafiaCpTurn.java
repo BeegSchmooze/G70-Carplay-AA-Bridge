@@ -54,14 +54,18 @@ public final class LeafiaCpTurn {
         }
     }
 
-    static Object field(Object o, String name) {
-        try {
-            Field f = o.getClass().getDeclaredField(name);
-            f.setAccessible(true);
-            return f.get(o);
-        } catch (Throwable t) {
-            return null;
+    /** the first of the '|'-separated field names this firmware's e/v has (the obfuscated names shift) */
+    static Object field(Object o, String names) {
+        for (String name : names.split("\\|")) {
+            try {
+                Field f = o.getClass().getDeclaredField(name);
+                f.setAccessible(true);
+                return f.get(o);
+            } catch (Throwable t) {
+                // not this firmware's name
+            }
         }
+        return null;
     }
 
     static int intField(Object o, String name, int def) {
@@ -156,13 +160,15 @@ public final class LeafiaCpTurn {
     /** e/u's NavigationCluster.updateTBTInfo call */
     public static void updateTBTInfo(NavigationCluster nc, int type, int side, float dir, float dist, int distErr,
             int combi, int unit, int bar, int barErr) {
+        LeafiaCpLane.cluster(nc);
         try {
             Object m = sCurrent;
             if (m != null) {
-                int maneuver = intField(m, "Dx", -1);
-                int junction = intField(m, "DD", -1);
-                int exit = intField(m, "DF", 0);
-                Object a = field(m, "DE");
+                // e/v fields: 251120 / 250818 names | 260507 names (same class, renamed)
+                int maneuver = intField(m, "Dx|DM", -1);
+                int junction = intField(m, "DD|DS", -1);
+                int exit = intField(m, "DF|DU", 0);
+                Object a = field(m, "DE|DT");
                 int[] angles = a instanceof int[] ? (int[]) a : null;
                 int sign = sign();
                 int[] d = drawn(maneuver, junction, exit, angles, sign);

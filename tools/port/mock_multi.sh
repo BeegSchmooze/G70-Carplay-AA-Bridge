@@ -57,4 +57,7 @@ u() {  # $1 label, $2 old package zip, $3 stock name, $4 firmware
 u "v1.1 on 251120" $W/release-u22/dist/packages/g70.carplay.bt.zip 251120 IKFL.USA.0000.V014.011.251120
 u "250818 bridge v2 (cameras)" $W/release-g70-250818/dist/packages/g70.carplay.bt.zip 250818 IKFL.USA.0000.V014.010.250818
 u "260507 bridge (cameras)" $W/release-g70-260507/dist/packages/g70.carplay.bt.zip 260507 IKFL.USA.0000.V015.012.260507
-u "260507 bridge (no cameras)" $W/release-g70-260507-nocam/dist/packages/g70.carplay.bt.zip 260507 IKFL.USA.0000.V015.012.260507
+u "v1.2 on 251120" $W/prev/v12-g70.carplay.bt.zip 251120 IKFL.USA.0000.V014.011.251120
+u "v1.2 on 250818" $W/prev/v12-g70.carplay.bt.zip 250818 IKFL.USA.0000.V014.010.250818
+u "v1.2 on 260507" $W/prev/v12-g70.carplay.bt.zip 260507 IKFL.USA.0000.V015.012.260507
+u "260507 update 23 test build" $W/prev/u23test1-g70.carplay.bt.zip 260507 IKFL.USA.0000.V015.012.260507
