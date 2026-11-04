@@ -1,7 +1,7 @@
 # G70 CarPlay / AA Bridge
 
 Wireless Android Auto and wireless CarPlay, with turn-by-turn from both on the
-cluster/HUD, for the **2022 Genesis G70** head unit, as a reversible
+cluster/HUD, for the **Genesis G70** head unit, as a reversible
 [NEMESIS](https://github.com/xwtk/hmg_nemesis) package. It started from
 [HMG Leafia Plus](https://github.com/VysseCodes/HMG-Leafia-Plus), which had no
 patch set for this car's firmware, so every patch here was ported to it. Since
@@ -10,15 +10,22 @@ v1.1 it is **standalone**: HMG Leafia Plus does not need to be installed.
 > Unofficial. Not affiliated with Hyundai, Kia, Genesis, Google, Apple, the
 > NEMESIS project or HMG Leafia Plus. You use it at your own risk.
 
-## Status (v1.1)
+## Status (v1.2)
 
-v1.1 ("update 22") makes the package standalone. It now turns on the wireless
-CarPlay / Android Auto features and the Wi-Fi hotspot itself, which used to need
-HMG Leafia Plus's `wireless.carplay.aa`. It also adds speed and red-light camera
-alerts on the HUD from your own camera list. v1.0 brought Apple Maps
-turn-by-turn and the now-playing track to the cluster and HUD. As since v0.96,
-it installs on any head unit whose stock files match (see
-[Compatibility](#compatibility)).
+v1.2 is **one package for several firmwares**. It carries a separate build for
+each supported G70 firmware and uses the one made for exactly your head unit's
+files (see [Compatibility](#compatibility)):
+
+| Firmware | Car | |
+|---|---|---|
+| `IKFL.USA.0000.V014.011.251120` | 2022 G70 | the original build, tested on the car |
+| `IKFL.USA.0000.V014.010.250818` | 2023 G70 | port, confirmed working on a 2023 G70 |
+| `IKFL.USA.0000.V015.012.260507` | 2026.07 update | port, new in v1.2, mock-tested |
+
+Speed-camera alerts are no longer part of the bridge: they will come back as a
+separate add-on package, so only people who want them install them. v1.1 made
+the package standalone (no HMG Leafia Plus needed); v1.0 brought Apple Maps
+turn-by-turn and the now-playing track to the cluster and HUD.
 
 | Feature | State |
 |---|---|
@@ -35,7 +42,7 @@ it installs on any head unit whose stock files match (see
 | CarPlay turn-by-turn on the cluster and HUD | Works (new in v1.0): Apple Maps turns with the distance. Tested parked and on short routes; rerouting not yet tested on the car |
 | CarPlay now playing on the cluster and HUD | Works (new in v1.0): track title and changes |
 | CarPlay call state on the cluster | Requested from the iPhone; not yet tested on the car |
-| Speed / red-light camera alerts on the HUD | Works (new in v1.1), from a camera list you supply (see [Camera alerts](#camera-alerts)). The camera icon takes the place of the speed-limit sign, with the distance; the cluster also shows its own "uneven road ahead" notice and chime |
+| Speed / red-light camera alerts on the HUD | Moved out of the bridge in v1.2; coming back as a separate add-on |
 | Standalone wireless setup (no HMG Leafia Plus) | New in v1.1; tested in the mock head unit on factory files and confirmed on a second G70 |
 
 Joining another Wi-Fi network from the car's settings turns off the hotspot that
@@ -45,10 +52,9 @@ Work on the open items continues; see [docs/TECHNICAL.md](docs/TECHNICAL.md).
 
 ## Requirements
 
-- A head unit whose stock files match the ones the build was made from. It was
-  built and tested on a **Genesis G70 2022, firmware
-  `IKFL.USA.0000.V014.011.251120`**; other firmwares (and closely related cars)
-  install only if every file the package changes is byte-identical. Run the
+- A head unit whose stock files match one of the package's firmware builds
+  (the table above). Other firmwares and closely related cars install only if
+  every file the package changes is byte-identical to one of them. Run the
   compatibility check first (below).
 - NEMESIS 1.15 or newer on the head unit.
 - A FAT32 USB drive.
@@ -62,28 +68,32 @@ restart the head unit; the bridge then turns everything on itself.
 
 `G70-Compat-Check.zip` (in the release, source in `tools/compat/`) is a
 read-only NEMESIS script: unzip it onto the USB drive, plug it in, and it writes
-`G70COMPAT-<n>/report.txt` with one line per file the package changes (MATCH or
-DIFFERENT), whether the wireless features are already on, and a result:
+`G70COMPAT-<n>/report.txt`. It checks your files against every firmware build in
+the package and reports the one that matches (or the closest), one line per file
+(MATCH or DIFFERENT), whether the wireless features are already on, and a result:
 
-- **COMPATIBLE**: the package will install on your car.
+- **COMPATIBLE**: the package will install on your car, and the report names
+  the firmware build it will use.
 - **NOT COMPATIBLE YET**: the report lists which files differ and which feature
   each one belongs to. A port for your firmware is possible: open an issue with
-  the report, and send a run of the probe (`tools/probe`) privately.
+  the report, and send a run of the probe (`tools/probe`) privately. A port adds
+  one more firmware build to the same package.
 
 The installer does the same check itself and refuses before changing anything
-if a file doesn't match, so trying an install on an unmatched car is safe. It
-just won't install. Every change is still built from the car's own stock files
-and must match the tested build's checksum.
+if no firmware build matches, so trying an install on an unmatched car is safe.
+It just won't install. Every change is still built from the car's own stock
+files and must match the tested build's checksum.
 
 ## Install
 
-1. Download the release zip (`G70-Bridge-v1.1.zip`) and unzip it onto the root
+1. Download the release zip (`G70-Bridge-v1.2.zip`) and unzip it onto the root
    of the USB drive. You should have `NEMESIS.data` and
    `packages/g70.carplay.bt.zip` at the top level. Do not unzip
    `g70.carplay.bt.zip` itself.
 2. Plug the drive into the car with the head unit on.
 3. If an earlier build of this package is installed, NEMESIS first offers
-   **uninstall**: accept it. Then accept **install**.
+   **uninstall**: accept it. Then accept **install**. (v1.2 can also install
+   straight over v1.1 and the earlier builds for the other two firmwares.)
 4. The head unit restarts. The first start after an install can take a few
    minutes, and Bluetooth may show "initializing" for a while; that is the apps
    being optimised once.
@@ -96,33 +106,28 @@ including the wireless settings, if the bridge was the one that turned them on.
 
 ## Camera alerts
 
-The bridge ships no camera data. Put your own list on the head unit with
-`tools/cameras` (a NEMESIS execute script): copy its two files and your
-`cameras.csv` to the root of a USB drive, plug it in and confirm. It copies the
-list to `/data/leafia/cameras.csv` and writes `G70CAMERAS-<n>/result.txt`. Run it
-with no `cameras.csv` on the drive to remove the list and turn alerts off.
-
-The CSV is `lat,lon,type,speed,heading,f2,category` with a header line (type
-`redlight` = red-light camera, anything else = speed camera; heading 360 = any
-direction; f2 1 = one direction, 2 = both). Alerts start 0.3 mi before a camera
-(0.5 mi from 45 mph) and use the car's own GPS, with or without navigation.
+Speed / red-light camera alerts were part of v1.1. From v1.2 they are not in the
+bridge: they will be a separate add-on package, so the bridge itself stays the
+same for everyone. Installing v1.2 over v1.1 removes them; a camera list already
+on the head unit is simply no longer read.
 
 ## How it is built
 
 Nothing modified from Hyundai, Google or Apple is shipped. The package carries
-only patch deltas (`package/files/*.lpd`). During install, Leafia's `lpatch`
+only patch deltas (`package/firmware/<firmware>/*.lpd`, one set per supported
+firmware). During install, Leafia's `lpatch`
 rebuilds each app on the head unit from that unit's own stock files: it refuses
 unless the stock `.odex` is exactly the expected original, and the rebuilt APK
 must match the tested build's checksum. Native libraries are patched the same
-way. The changes themselves are in [`src/patches/`](src/patches) as smali
-diffs against the stock apps.
+way. The changes themselves are in [`src/patches/<firmware>/`](src/patches) as
+smali diffs against each firmware's stock apps.
 
 | Part | Change |
 |---|---|
 | `HKMC_DiPO` (CarPlay) | Bluetooth→iAP2 bridge, starts the CarPlay engine for wireless, audio source and focus, iAP2 notifications let through for wireless sessions, iPhone in the device list, iAP2 handover into the CarPlay session, now playing and call state requested over wireless, drawn turns; stock bugs fixed: iAP send length, maneuver index |
 | `Iap2ServerApp` | Starts/ends the iAP2 session on the Bluetooth transport; advertises route guidance |
-| `HKMC_GPM` (Android Auto) | Stuck-session, USB-drive and same-phone reconnect fixes; turn-by-turn sent straight to the cluster (port of HMG-API's AaTurns) with drawn turns, street name, lanes, smooth count-down; camera list matched against GPS |
-| `HKMC_Navi_ExSL` (car navigation) | Skips its turn frames while the phone guides; shows camera alerts in its speed-limit frames; logs what it sends to the cluster (diagnostics) |
+| `HKMC_GPM` (Android Auto) | Stuck-session, USB-drive and same-phone reconnect fixes; turn-by-turn sent straight to the cluster (port of HMG-API's AaTurns) with drawn turns, street name, lanes, smooth count-down |
+| `HKMC_Navi_ExSL` (car navigation) | Skips its turn frames while the phone guides; logs what it sends to the cluster (diagnostics) |
 | Wireless settings | Wireless CarPlay / Android Auto and Wi-Fi feature files added, `featurexml.cfg`'s removal of them and of the hotspot commented out, `persist.ium.support=carplay`; each left alone when already in place |
 | `libautoreceiver_infobank.so` | Leafia/NEMESIS `projection.tbt` navigation bridge, ported to this car's library build |
 | `libCarPlayCore.so` | Leafia recipe: accept Wi-Fi CarPlay sessions |
@@ -131,15 +136,17 @@ diffs against the stock apps.
 ## Repository layout
 
 ```
-package/          the NEMESIS package source (zip its contents to make g70.carplay.bt.zip)
-src/patches/      smali diffs: stock app -> this build (new classes included)
+package/          the NEMESIS package source (zip its contents to make g70.carplay.bt.zip);
+                  package/firmware/<firmware>/ holds each firmware's checksums and deltas
+src/patches/      smali diffs per firmware: stock app -> this build (new classes included)
 src/java/         Java source of the bridge classes compiled into the apps
 src/hooks/        the scripts that insert the calls into the apps' smali
 tools/aa-lib-port library port scripts (see docs/TECHNICAL.md)
+tools/port/       porting to another firmware: deodex, 3-way merge, rename and field
+                  checks, builds, and the multi-firmware package and its mock tests
 tools/checks/     reference/register checkers and the mock head-unit tests
 tools/probe/      read-only diagnostic probe (NEMESIS execute script)
 tools/compat/     read-only compatibility check (generated from the installer's checksums)
-tools/cameras/    puts your camera list on the head unit (no camera data included)
 docs/             technical notes
 ```
 

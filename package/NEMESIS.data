@@ -1,7 +1,7 @@
 [nemesis]
 version=1.0
 id=g70.carplay.bt
-name=G70 Wireless CarPlay / Android Auto bridge
+name=G70 Wireless CarPlay / Android Auto bridge (251120, 250818, 260507)
 types=application
 preinstall=scripts/pre.sh
 postinstall=scripts/post.sh

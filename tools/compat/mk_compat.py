@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Make the G70 bridge compatibility check (a read-only NEMESIS execute script) from the
-installer's own checksum list, so the two always agree.
+installer's own checksum lists (package/firmware/<name>/sums.sh, one per supported firmware),
+so the two always agree.
 
 usage: mk_compat.py <package dir> <out dir>
 Writes <out>/NEMESIS.sh and <out>/NEMESIS.data.
@@ -9,8 +10,13 @@ import os, re, sys
 
 pkg, out = sys.argv[1:3]
 common = open(os.path.join(pkg, 'scripts', 'common.sh')).read()
-sums = re.findall(r'^(SUM_[A-Za-z0-9_]+|PRODUCT|APPS)=(.*)$', common, re.M)
-keep = '\n'.join('%s=%s' % (k, v) for k, v in sums)
+apps = re.search(r'^APPS=(.*)$', common, re.M).group(1)
+fwdir = os.path.join(pkg, 'firmware')
+sets = sorted(d for d in os.listdir(fwdir) if os.path.isfile(os.path.join(fwdir, d, 'sums.sh')))
+keep = 'APPS=%s\nSETS="%s"\n' % (apps, ' '.join(sets))
+for d in sets:
+    body = [l for l in open(os.path.join(fwdir, d, 'sums.sh')).read().splitlines() if l and not l.startswith('#')]
+    keep += '\nset_%s() {\n%s\n}' % (d, '\n'.join('    ' + l for l in body))
 
 script = r'''#!/system/bin/sh
 # G70 bridge compatibility check - READ ONLY. Changes nothing on the car.
@@ -46,43 +52,65 @@ in_list() {
     return 1
 }
 
-BAD=""
 say "Genesis G70 bridge - compatibility check"
 say "date $(date)"
 _p=$(getprop ro.build.product 2>/dev/null)
-if [ "$_p" = "$PRODUCT" ]; then
-    say "firmware $_p (the build's own)"
-else
-    say "firmware $_p (the build was made on $PRODUCT; it installs if every file below matches)"
-fi
+say "firmware $_p (the name alone doesn't decide it: the files below do)"
+say "firmware sets in this package: $SETS"
 say ""
 
-for _a in $APPS; do
-    _apk=$(file_md5 /system/app/$_a.apk)
-    _odex=$(file_md5 /system/app/$_a.odex)
-    _sa=$(eval echo "\$SUM_STOCK_${_a}_apk")
-    _so=$(eval echo "\$SUM_STOCK_${_a}_odex")
-    _new=$(eval echo "\$SUM_NEW_${_a}")
-    _prev=$(eval echo "\$SUM_PREV_${_a}")
-    if [ "$_apk" = "$_sa" ] && [ "$_odex" = "$_so" ]; then
-        say "MATCH    $_a (stock, same as the build's)"
-    elif [ "$_apk" = "$_new" ] || in_list "$_apk" "$_prev"; then
-        say "MATCH    $_a (a build of this package is installed)"
+# check_set <name>: one line per file for that set into $T; BAD = the files that differ
+check_set() {
+    "set_$1"
+    BAD=""; T=""
+    for _a in $APPS; do
+        _apk=$(file_md5 /system/app/$_a.apk)
+        _odex=$(file_md5 /system/app/$_a.odex)
+        _sa=$(eval echo "\$SUM_STOCK_${_a}_apk")
+        _so=$(eval echo "\$SUM_STOCK_${_a}_odex")
+        _new=$(eval echo "\$SUM_NEW_${_a}")
+        _prev=$(eval echo "\$SUM_PREV_${_a}")
+        if [ "$_apk" = "$_sa" ] && [ "$_odex" = "$_so" ]; then
+            T="$T|MATCH    $_a (stock, same as the build's)"
+        elif [ "$_apk" = "$_new" ] || in_list "$_apk" "$_prev"; then
+            T="$T|MATCH    $_a (a build of this package is installed)"
+        else
+            T="$T|DIFFERENT $_a  apk $_apk  odex $_odex"
+            BAD="$BAD $_a"
+        fi
+    done
+    _lib=$(file_md5 /system/lib/libautoreceiver_infobank.so)
+    if [ "$_lib" = "$SUM_STOCK_AALIB" ]; then
+        T="$T|MATCH    libautoreceiver_infobank.so (stock)"
+    elif [ "$_lib" = "$SUM_NEW_AALIB" ] || in_list "$_lib" "$SUM_PREV_AALIB"; then
+        T="$T|MATCH    libautoreceiver_infobank.so (a build of this package is installed)"
     else
-        say "DIFFERENT $_a  apk $_apk  odex $_odex"
-        BAD="$BAD $_a"
+        T="$T|DIFFERENT libautoreceiver_infobank.so  $_lib"
+        BAD="$BAD libautoreceiver_infobank.so"
     fi
-done
+}
+# say_lines: the lines check_set collected ('|' separated)
+say_lines() {
+    local _ifs=$IFS _l
+    IFS='|'
+    for _l in ${T#|}; do [ -n "$_l" ] && say "$_l"; done
+    IFS=$_ifs
+}
 
-_lib=$(file_md5 /system/lib/libautoreceiver_infobank.so)
-if [ "$_lib" = "$SUM_STOCK_AALIB" ]; then
-    say "MATCH    libautoreceiver_infobank.so (stock)"
-elif [ "$_lib" = "$SUM_NEW_AALIB" ] || in_list "$_lib" "$SUM_PREV_AALIB"; then
-    say "MATCH    libautoreceiver_infobank.so (a build of this package is installed)"
+FOUND=""; BEST=""; BESTN=99
+for _s in $SETS; do
+    check_set "$_s"
+    _c=0; for _b in $BAD; do _c=$((_c + 1)); done
+    if [ -z "$BAD" ]; then FOUND=$_s; break; fi
+    if [ "$_c" -lt "$BESTN" ]; then BEST=$_s; BESTN=$_c; fi
+done
+if [ -n "$FOUND" ]; then
+    say "firmware set $FOUND (built on $PRODUCT) matches:"
 else
-    say "DIFFERENT libautoreceiver_infobank.so  $_lib"
-    BAD="$BAD libautoreceiver_infobank.so"
+    check_set "$BEST"
+    say "no firmware set matches; the closest is $BEST (built on $PRODUCT):"
 fi
+say_lines
 
 _core=$(file_md5 /system/lib/libCarPlayCore.so)
 if [ "$_core" = "$SUM_G70_CPCORE" ]; then
@@ -102,8 +130,8 @@ if [ -d /data/nemesis/backup/wireless.projection ]; then
 fi
 
 say ""
-if [ -z "$BAD" ]; then
-    say "RESULT: COMPATIBLE - the bridge package should install on this car."
+if [ -n "$FOUND" ]; then
+    say "RESULT: COMPATIBLE - the bridge package should install on this car (firmware set $FOUND)."
 else
     say "RESULT: NOT COMPATIBLE YET - these differ:$BAD"
     for _b in $BAD; do

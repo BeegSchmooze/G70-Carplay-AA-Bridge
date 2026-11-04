@@ -1,6 +1,7 @@
 #!/system/bin/sh
-# g70.carplay.bt - wireless CarPlay for the Genesis G70 (built on IKFL.USA 251120; any
-# firmware whose stock files match byte for byte),
+# g70.carplay.bt - wireless CarPlay / Android Auto for the Genesis G70. One firmware set per
+# supported build in firmware/<name>/ (sums.sh + deltas); the set whose stock files this unit
+# has is used (pick_firmware at the end), whatever the firmware is called,
 # built on HMG Leafia Plus parts. Standalone: it also sets the wireless projection
 # flags Leafia's wireless.carplay.aa used to (left alone when already in place).
 #
@@ -18,19 +19,16 @@
 #   libCarPlayCore Wi-Fi sessions (Leafia recipe carplay-core-wifi)
 #   HKMC_Navi_ExSL car navigation skips its turn frames while the phone guides
 #                    (sys.leafia.phonetbt, stamped by DiPO / GPM); traps still pass
-#   cameras        speed / red-light camera alerts on the HUD from the owner's list
-#                    (/data/leafia/cameras.csv, none shipped): GPM matches GPS against it
-#                    (sys.leafia.cam), the car navigation shows it in its trap frames
 #   libautoreceiver_infobank  Android Auto turn-by-turn on the cluster: Leafia's
 #                    projection.tbt library patch ported to this stock library
-#                    (files/libautoreceiver_infobank.tbt.lpd, hash-gated delta)
+#                    (firmware/<name>/libautoreceiver_infobank.tbt.lpd, hash-gated delta)
 #   comp/4_audio   Leafia's wireless CarPlay audio part, unchanged
 #   projection     the wireless CarPlay / Android Auto connectivity features,
 #                    featurexml.cfg's removal of them and of the hotspot commented,
 #                    persist.ium.support=carplay
 #
 # Nothing modified is shipped: the four apps are rebuilt on the head unit from its
-# own stock files (files/<app>.lpd deltas, applied by lpatch only to the exact
+# own stock files (firmware/<name>/<app>.lpd deltas, applied by lpatch only to the exact
 # stock .odex, then added to the stock APK), and each result must match the
 # tested build's checksum.
 # Every change is checked against the stock checksums first, backed up, and put
@@ -44,36 +42,11 @@ LOG=/data/nemesis/g70.carplay.bt.log
 APP_DIR=/system/app
 BUILD_DIR=/data/nemesis/build/g70.carplay.bt
 CP_XML=/system/etc/permissions/com.hkmc.software.connectivity.carplay_wireless.xml
-PRODUCT=IKFL.USA.0000.V014.011.251120
 APPS="Iap2ServerApp HKMC_DiPO HKMC_GPM HKMC_Navi_ExSL"
 
-# stock files the builds were made from
-SUM_STOCK_HKMC_DiPO_apk=3d2ef97eb6a6bcd0c095a0369d03ab7a
-SUM_STOCK_HKMC_DiPO_odex=9d8d144d6b21e96f5df53389068f6c1e
-SUM_STOCK_Iap2ServerApp_apk=f5d60c0e7a1fd8851bfbbfb012ad90b6
-SUM_STOCK_Iap2ServerApp_odex=9553c77d84af024ddf557e584e22e2e1
-SUM_STOCK_HKMC_GPM_apk=41acee707881cee45496ea1c609269fd
-SUM_STOCK_HKMC_GPM_odex=bd81a1f7021f6fcfe5493318ebde829d
-SUM_STOCK_HKMC_Navi_ExSL_apk=fa6b8cb90701f2f333a785ebab0133d0
-SUM_STOCK_HKMC_Navi_ExSL_odex=5f83f1fbc68ce37168c5179418abc0fe
-# our builds (stock APK + patched classes.dex)
-SUM_NEW_HKMC_DiPO=6922669d1c356cee538651c98772df3d
-SUM_NEW_Iap2ServerApp=406ee0d95345bc90205b259ec2018bf9
-SUM_NEW_HKMC_GPM=ce84e98b87eed5cc46813b31ac4c7ef4
-SUM_NEW_HKMC_Navi_ExSL=b9c9e7cd477b87cb8750c2e0445120cc
-# earlier builds of this package an install may replace (the stock backup is kept)
-SUM_PREV_HKMC_DiPO="c250f2e3f3d06e2a815a85935e305106 8bd271656e8af7ef61da6d4f33e9d0d1 6b2bdc7eed24629752e61b9a1e0b239c 26f714beedf8224b430a1c1bc2e49c63 947849488fad11450204196aff904b33 57c00b020cb09bfa312250640e4cc9ca 02b779f25634ad18e250de7e716ec3fa dcd52da6ceb2ea135433dec7caa2b88f f45342e682af7c257897f0909378d281 8012b94b4b8a85c6a4939bd0180961bb 96303fd6f75c511e2674cb987c3567c2 ed35c863e4eb0ec8e53934951602fe4c eb4483a40baafc1d81703e7bb837852b bdde5781780f722e79f75be99fda6fd0 0e0501f1859afa6a70dbce24d1104d72 af375d16a5226b4e8ab50fe47d535063"
-SUM_PREV_Iap2ServerApp="57bdeabb2f9cc9708d6bbcf985d2b136"
-SUM_PREV_HKMC_GPM="e01c64fc4e3a36bd341e0fa15faa77fa e131dc97d7f2c0a196ff76f786e9e91e 97531c1fd478ac7f2ff63171c817ae62 ddd5f2da66f1b822c811870f41710091 34176b279b79c992593bd9f5b351d33d d9e7194d1cd528537cd5552be26acd1a 386961ac50478484c57bd0e7507ee4d6 eabbf89a47325a08e705d4f6a8ae298a b31e1be345f7fbf8e51dc8ae665305bb 32821c1e0e9839549407c3cc1131dbac 175aab80f023a5b8bd57ece3ea7ba112 83b3862497b0bc5ed15e67394c28d1b2 645a2bf8d682971cb2159fc240462bb9"
-SUM_PREV_HKMC_Navi_ExSL="a3a3e3aa99e46929becf15065448271f f0ab55cb5869d5210cb7a1b005e06458 5c62b556f1fd7f1a837813a40ca2a191"
 
 # Android Auto library (turn-by-turn)
 AA_LIB=/system/lib/libautoreceiver_infobank.so
-AA_LPD=files/libautoreceiver_infobank.tbt.lpd
-SUM_STOCK_AALIB=9ee6c1d408eaed98c43e03bef5e4866c
-SUM_NEW_AALIB=a20ebe3fe5ab90a545040a82fe9b6c88
-# earlier builds of the library this package may replace (rebuilt from the stock backup)
-SUM_PREV_AALIB="97df33a3bf78336c9511792d7118d713"
 
 PROPS="persist.sys.iap2.wifi persist.iap2.iden.wireless"
 PROP_FILE=$BACKUP_DIR/props
@@ -154,6 +127,12 @@ is_prev_app() {
 check_unit() {
     local _p _n
     _p=$(getprop ro.build.product 2>/dev/null)
+    if [ -z "$FW_SET" ]; then
+        log "firmware '$_p': this unit's files match none of this package's firmware sets ($(fw_sets))"
+        log "FAIL: no firmware set for this unit"
+        return 1
+    fi
+    log "firmware set $FW_SET (built on $PRODUCT)"
     # the firmware name is informational: every file this package changes is checked
     # below and must be the exact stock file the build was made from (an app's .odex
     # also records the framework it was optimised against), so another firmware with
@@ -170,7 +149,7 @@ check_unit() {
         [ -s "files/permissions/$_n" ] || { log "FAIL: payload files/permissions/$_n missing"; return 1; }
     done
     for _n in $APPS; do
-        [ -s "files/$_n.lpd" ] || { log "FAIL: payload files/$_n.lpd missing"; return 1; }
+        [ -s "$FW_DIR/$_n.lpd" ] || { log "FAIL: payload $FW_DIR/$_n.lpd missing"; return 1; }
         if is_stock_app "$_n"; then
             log "$_n: stock - ok"
         elif is_our_app "$_n"; then
@@ -200,6 +179,7 @@ check_unit() {
         log "FAIL: libautoreceiver_infobank.so is neither stock nor this build"
         return 1
     fi
+    mkdir -p "$BACKUP_DIR" && echo "$FW_SET" > "$BACKUP_DIR/firmware-set" || return 1
     return 0
 }
 
@@ -307,7 +287,7 @@ build_apps() {
             continue
         fi
         rm -f "$BUILD_DIR/$_n.apk" "$_dex" 2>/dev/null
-        if ! "$(lp_bin)" delta "files/$_n.lpd" "$BACKUP_DIR/$_n.odex" "$_dex" >/dev/null 2>&1; then
+        if ! "$(lp_bin)" delta "$FW_DIR/$_n.lpd" "$BACKUP_DIR/$_n.odex" "$_dex" >/dev/null 2>&1; then
             log "FAIL: stock $_n.odex is not the file this patch needs"
             return 1
         fi
@@ -760,3 +740,33 @@ remove_backup_dir() {
         *) log "FAIL: refusing to remove $BACKUP_DIR"; return 1 ;;
     esac
 }
+
+# ---- firmware sets ----
+# firmware/<name>/sums.sh holds one firmware's values (PRODUCT, SUM_STOCK_*, SUM_NEW_*, SUM_PREV_*)
+# and its deltas sit beside it. The set whose files this unit has (each app and the Android Auto
+# library stock, ours or an earlier build of ours) is used. Uninstall after a firmware update,
+# when no set matches any more, falls back to the set recorded at install; the restore steps
+# still leave alone any file that is not this package's.
+FW_SET=""; FW_DIR=""; AA_LPD=""
+fw_sets() { local _d _o=""; for _d in firmware/*/sums.sh; do _d=${_d%/sums.sh}; _o="$_o ${_d#firmware/}"; done; echo "${_o# }"; }
+fw_load() { . "./firmware/$1/sums.sh"; FW_DIR=firmware/$1; AA_LPD=$FW_DIR/libautoreceiver_infobank.tbt.lpd; }
+fw_matches() {
+    local _n
+    for _n in $APPS; do
+        is_stock_app "$_n" || is_our_app "$_n" || is_prev_app "$_n" || return 1
+    done
+    sum_eq "$AA_LIB" "$SUM_STOCK_AALIB" || sum_eq "$AA_LIB" "$SUM_NEW_AALIB" || is_prev_aalib
+}
+pick_firmware() {
+    local _s _rec=""
+    for _s in $(fw_sets); do
+        fw_load "$_s"
+        if fw_matches; then FW_SET=$_s; return 0; fi
+    done
+    [ -r "$BACKUP_DIR/firmware-set" ] && read -r _rec < "$BACKUP_DIR/firmware-set"
+    if [ -n "$_rec" ] && [ -r "firmware/$_rec/sums.sh" ]; then
+        fw_load "$_rec"; FW_SET=$_rec; return 0
+    fi
+    return 1
+}
+pick_firmware || true

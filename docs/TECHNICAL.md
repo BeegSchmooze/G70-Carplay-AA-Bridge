@@ -1,4 +1,4 @@
-# Technical notes — Genesis G70 (IKFL.USA.0000.V014.011.251120)
+# Technical notes — Genesis G70 (IKFL.USA 251120, 250818, 260507)
 
 Head unit: Telechips TCC803x, Android 4.4.2 (Dalvik), `ro.product.opt.stepofspec = 95`.
 No app or library on this firmware matched any car HMG Leafia Plus supports, so
@@ -205,3 +205,31 @@ recorded nothing for `featurexml.cfg` records and patches it then.
 `tools/probe` collects logs, props and app files to the USB drive (read only).
 This toolbox has no `find`, `tr`, `wc` or `tail`; scripts must use toolbox
 commands only.
+
+## v1.2: one package for several firmwares, camera alerts moved out
+
+- Firmware sets: `package/firmware/<firmware>/sums.sh` (the stock files that build was made
+  from, our builds, earlier builds an install may replace) plus that firmware's `*.lpd`
+  deltas. `scripts/common.sh` `pick_firmware` loads each set and keeps the first one whose
+  apps and Android Auto library on the unit are stock, ours or an earlier build of ours. The
+  set is recorded in the backup folder (`firmware-set`); uninstall falls back to it when no set
+  matches any more (after a firmware update), and the restore steps still leave alone any
+  file that is not this package's. `check_unit` refuses when no set matches.
+- Sets in v1.2: 251120 (our car's original firmware), 250818 (2023 G70) and 260507 (the
+  2026.07 update). Earlier builds each set replaces: v1.1, the 250818 port bridge, the first
+  260507 builds.
+- Camera alerts are no longer in the bridge (GPM without `LeafiaCam*` and its start call; the
+  car navigation from the turn-mute-only tree). They come back as a separate add-on.
+- 260507 port (`tools/port`): deodex against the port's own framework, 3-way merge of our
+  smali onto its stock (`merge.py`), method renames (`renames.py`), stock fields our code
+  uses compared by how the stock code uses them (`fieldcheck.py`), then `check_refs` /
+  `check_regs` against its framework. Fixes it needed: `DipoService.C(Z)` now sets another
+  field (the audio flag is `hH`, set by `E(Z)`); `f/b.bH` -> `bJ`, `e/g.mH` -> `mM`; the car
+  navigation's `am.getCurrentContext` is `al.getCurrentContext`. Android Auto library:
+  `tools/aa-lib-port/build_lib_port.py` entry `g70-260507` (addresses from `mapaddr.py` /
+  `blmap.py`; the dealloc helper is the same function with the allocator inlined).
+- Checks: `tools/port/mock_multi.sh` (fresh install on each firmware's files picks the right
+  set; an IKPE-named unit with 250818 files installs; an unknown file mix is refused; upgrades
+  from v1.1, the 250818 bridge and both 260507 builds; every uninstall byte-identical) and
+  `tools/port/mock_compat.sh` (the compatibility check names the right set, or the closest set
+  and the files that differ).

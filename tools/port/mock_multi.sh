@@ -1,0 +1,60 @@
+#!/bin/sh
+# Mock installs of the multi-firmware bridge (ports/build_multi.sh) on each supported firmware's
+# stock files: fresh install + uninstall (byte-identical), the firmware set it picked, refused on
+# files no set has, and upgrades from the single-firmware builds already out there.
+# usage: mock_multi.sh  (run in the leafia container)
+W=/work
+SH=$(command -v mksh || echo /bin/sh)
+R=$W/release-multi
+(cd $R/dist && printf '[nemesis]\nversion=1.0\ntype=install\npath=packages/g70.carplay.bt.zip\n' > NEMESIS.data \
+    && rm -f G70.zip && zip -qrX G70.zip NEMESIS.data packages)
+Z=$R/dist/G70.zip
+FX=$W/ports/g70-250818/onebin/featurexml.cfg    # factory featurexml (same file on 251120/260507)
+stock() {  # $1 name, $2 app/lib/framework source dir, $3 etc + build.prop source dir -> /tmp/mstock-$1
+    _s=/tmp/mstock-$1; rm -rf $_s; mkdir -p $_s/onebin/ikfl_us
+    cp -r $2/app $2/lib $2/framework $_s/
+    cp -r $3/etc $3/build.prop $_s/
+    cp $FX $_s/onebin/ikfl_us/featurexml.cfg
+    [ -f $_s/lib/libstagefright_soft_aacdec.so ] || cp $W/g70-stock/lib/libstagefright_soft_aacdec.so $_s/lib/
+    # the 251120 copy was taken with Leafia installed: put its permission files back to factory
+    rm -f $_s/etc/permissions/com.hkmc.software.connectivity.carplay_wireless.xml \
+          $_s/etc/permissions/com.hkmc.software.connectivity.androidauto_wireless.xml
+}
+stock 251120 $W/g70-stock $W/ports/g70-250818
+stock 250818 $W/ports/g70-250818 $W/ports/g70-250818
+stock 260507 $W/ports/g70-260507 $W/ports/g70-260507
+# a unit no set has: 260507 files with one app from 250818
+stock other $W/ports/g70-260507 $W/ports/g70-260507
+cp $W/ports/g70-250818/app/HKMC_GPM.apk $W/ports/g70-250818/app/HKMC_GPM.odex /tmp/mstock-other/app/
+
+t() {  # $1 label, $2 stock name, $3 firmware, $4 expected set (or "refused"), rest: env
+    _l=$1; _s=/tmp/mstock-$2; _f=$3; _e=$4; shift 4
+    echo "== $_l"
+    env MOCK_SH=$SH "$@" sh $W/tools-g70/mock-test.sh $Z $_f ikfl_us $_s > /tmp/mockmulti.out 2>&1
+    grep -E "INSTALL|UNINSTALL|REFUSED" /tmp/mockmulti.out | head -2
+    _x=$(sed -n 's/^sandbox (logs[^)]*): //p' /tmp/mockmulti.out)
+    _set=$(sed -n 's/^firmware set \([^ ]*\) .*/\1/p' $_x/pre.log 2>/dev/null | head -1)
+    if [ "$_e" = refused ]; then
+        grep -q "no firmware set for this unit" $_x/pre.log || echo "FAIL: not refused for a missing set"
+    else
+        [ "$_set" = "$_e" ] || echo "FAIL: picked set '$_set', expected $_e"
+        grep -q "commented the wireless" $_x/post.log || echo "FAIL: featurexml.cfg left as it was"
+    fi
+    grep -h "^FAIL" $_x/pre.log $_x/post.log 2>/dev/null | head -3
+}
+t "251120: fresh install" 251120 IKFL.USA.0000.V014.011.251120 251120
+t "250818: fresh install" 250818 IKFL.USA.0000.V014.010.250818 250818
+t "260507: fresh install" 260507 IKFL.USA.0000.V015.012.260507 260507
+t "260507: Android down" 260507 IKFL.USA.0000.V015.012.260507 260507 MOCK_ANDROID_DOWN=1
+t "260507: NEMESIS 1.15" 260507 IKFL.USA.0000.V015.012.260507 260507 MOCK_NEMESIS=1.15
+t "IKPE name on 250818 files" 250818 IKPE.USA.0000.V014.010.250818 250818
+t "unknown mix of files (must be refused)" other IKFL.USA.0000.V015.012.260507 refused
+
+u() {  # $1 label, $2 old package zip, $3 stock name, $4 firmware
+    echo "== upgrade: $1"
+    env MOCK_SH=$SH sh $W/tools-g70/mock-upgrade.sh $2 $Z $4 ikfl_us /tmp/mstock-$3 2>&1 | grep -E "INSTALL|UPGRADE|UNINSTALL|FAIL" | head -4
+}
+u "v1.1 on 251120" $W/release-u22/dist/packages/g70.carplay.bt.zip 251120 IKFL.USA.0000.V014.011.251120
+u "250818 bridge v2 (cameras)" $W/release-g70-250818/dist/packages/g70.carplay.bt.zip 250818 IKFL.USA.0000.V014.010.250818
+u "260507 bridge (cameras)" $W/release-g70-260507/dist/packages/g70.carplay.bt.zip 260507 IKFL.USA.0000.V015.012.260507
+u "260507 bridge (no cameras)" $W/release-g70-260507-nocam/dist/packages/g70.carplay.bt.zip 260507 IKFL.USA.0000.V015.012.260507

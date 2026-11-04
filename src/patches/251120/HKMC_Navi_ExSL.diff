@@ -1,0 +1,431 @@
+diff -ruN --strip-trailing-cr -I '^ *#' HKMC_Navi_ExSL.stock/com/mnsoft/navi/LeafiaNavLog.smali HKMC_Navi_ExSL.new/com/mnsoft/navi/LeafiaNavLog.smali
+--- HKMC_Navi_ExSL.stock/com/mnsoft/navi/LeafiaNavLog.smali	1970-01-01 00:00:00.000000000 +0000
++++ HKMC_Navi_ExSL.new/com/mnsoft/navi/LeafiaNavLog.smali	2026-11-04 19:08:47.578577973 +0000
+@@ -0,0 +1,208 @@
++.class public final Lcom/mnsoft/navi/LeafiaNavLog;
++.super Ljava/lang/Object;
++.source "LeafiaNavLog.java"
++
++
++# static fields
++.field private static final last:[Ljava/lang/String;
++
++
++# direct methods
++.method static constructor <clinit>()V
++    .registers 1
++
++    .prologue
++    .line 16
++    const/16 v0, 0x100
++
++    new-array v0, v0, [Ljava/lang/String;
++
++    sput-object v0, Lcom/mnsoft/navi/LeafiaNavLog;->last:[Ljava/lang/String;
++
++    return-void
++.end method
++
++.method private constructor <init>()V
++    .registers 1
++
++    .prologue
++    .line 18
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++
++    .line 19
++    return-void
++.end method
++
++.method public static logData(I[I[D[Ljava/lang/String;[B)V
++    .registers 11
++
++    .prologue
++    .line 23
++    :try_start_0
++    new-instance v1, Ljava/lang/StringBuilder;
++
++    invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
++
++    .line 24
++    if-eqz p1, :cond_14
++
++    const-string v0, " ints="
++
++    invoke-virtual {v1, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    move-result-object v0
++
++    invoke-static {p1}, Ljava/util/Arrays;->toString([I)Ljava/lang/String;
++
++    move-result-object v2
++
++    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    .line 25
++    :cond_14
++    if-eqz p2, :cond_23
++
++    const-string v0, " dbls="
++
++    invoke-virtual {v1, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    move-result-object v0
++
++    invoke-static {p2}, Ljava/util/Arrays;->toString([D)Ljava/lang/String;
++
++    move-result-object v2
++
++    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    .line 26
++    :cond_23
++    if-eqz p3, :cond_32
++
++    const-string v0, " strs="
++
++    invoke-virtual {v1, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    move-result-object v0
++
++    invoke-static {p3}, Ljava/util/Arrays;->toString([Ljava/lang/Object;)Ljava/lang/String;
++
++    move-result-object v2
++
++    invoke-virtual {v0, v2}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    .line 27
++    :cond_32
++    if-eqz p4, :cond_5b
++
++    .line 28
++    const-string v0, " bytes="
++
++    invoke-virtual {v1, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    .line 29
++    array-length v2, p4
++
++    const/4 v0, 0x0
++
++    :goto_3b
++    if-ge v0, v2, :cond_5b
++
++    aget-byte v3, p4, v0
++
++    .line 30
++    shr-int/lit8 v4, v3, 0x4
++
++    and-int/lit8 v4, v4, 0xf
++
++    const/16 v5, 0x10
++
++    invoke-static {v4, v5}, Ljava/lang/Character;->forDigit(II)C
++
++    move-result v4
++
++    invoke-virtual {v1, v4}, Ljava/lang/StringBuilder;->append(C)Ljava/lang/StringBuilder;
++
++    move-result-object v4
++
++    and-int/lit8 v3, v3, 0xf
++
++    const/16 v5, 0x10
++
++    invoke-static {v3, v5}, Ljava/lang/Character;->forDigit(II)C
++
++    move-result v3
++
++    invoke-virtual {v4, v3}, Ljava/lang/StringBuilder;->append(C)Ljava/lang/StringBuilder;
++
++    .line 29
++    add-int/lit8 v0, v0, 0x1
++
++    goto :goto_3b
++
++    .line 33
++    :cond_5b
++    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
++
++    move-result-object v0
++
++    .line 34
++    and-int/lit16 v1, p0, 0xff
++
++    .line 35
++    sget-object v2, Lcom/mnsoft/navi/LeafiaNavLog;->last:[Ljava/lang/String;
++
++    aget-object v2, v2, v1
++
++    invoke-virtual {v0, v2}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
++
++    move-result v2
++
++    if-eqz v2, :cond_6c
++
++    .line 41
++    :goto_6b
++    return-void
++
++    .line 36
++    :cond_6c
++    sget-object v2, Lcom/mnsoft/navi/LeafiaNavLog;->last:[Ljava/lang/String;
++
++    aput-object v0, v2, v1
++
++    .line 37
++    const-string v1, "LeafiaNAV"
++
++    new-instance v2, Ljava/lang/StringBuilder;
++
++    invoke-direct {v2}, Ljava/lang/StringBuilder;-><init>()V
++
++    const-string v3, "type="
++
++    invoke-virtual {v2, v3}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    move-result-object v2
++
++    invoke-virtual {v2, p0}, Ljava/lang/StringBuilder;->append(I)Ljava/lang/StringBuilder;
++
++    move-result-object v2
++
++    invoke-virtual {v2, v0}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++
++    move-result-object v0
++
++    invoke-virtual {v0}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
++
++    move-result-object v0
++
++    invoke-static {v1, v0}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
++    :try_end_8c
++    .catch Ljava/lang/Throwable; {:try_start_0 .. :try_end_8c} :catch_8d
++
++    goto :goto_6b
++
++    .line 38
++    :catch_8d
++    move-exception v0
++
++    goto :goto_6b
++.end method
+diff -ruN --strip-trailing-cr -I '^ *#' HKMC_Navi_ExSL.stock/com/mnsoft/navi/LeafiaTbtMute.smali HKMC_Navi_ExSL.new/com/mnsoft/navi/LeafiaTbtMute.smali
+--- HKMC_Navi_ExSL.stock/com/mnsoft/navi/LeafiaTbtMute.smali	1970-01-01 00:00:00.000000000 +0000
++++ HKMC_Navi_ExSL.new/com/mnsoft/navi/LeafiaTbtMute.smali	2026-11-04 19:08:47.197343402 +0000
+@@ -0,0 +1,172 @@
++.class public final Lcom/mnsoft/navi/LeafiaTbtMute;
++.super Ljava/lang/Object;
++.source "LeafiaTbtMute.java"
++
++# While a phone (CarPlay or Android Auto) is guiding, DiPO / GPM stamp
++# sys.leafia.phonetbt with SystemClock.elapsedRealtime() seconds each time they
++# send a turn to the cluster. The car navigation keeps sending its own turn frames
++# every couple of seconds (even with no route), which overwrote the phone's.
++# Its turn display frames are skipped while the stamp is under 90 s old; speed
++# camera / trap frames and the HUD warning distance still go through.
++
++.field private static sMuted:Z
++
++# G70 diagnostic: the last turn-list frame logged
++.field private static sLastFrame:Ljava/lang/String;
++
++
++.method private constructor <init>()V
++    .locals 0
++
++    invoke-direct {p0}, Ljava/lang/Object;-><init>()V
++    return-void
++.end method
++
++.method public static muted()Z
++    .locals 6
++
++    :try_start
++    const-string v0, "sys.leafia.phonetbt"
++    const-wide/16 v1, 0x0
++    invoke-static {v0, v1, v2}, Landroid/os/SystemProperties;->getLong(Ljava/lang/String;J)J
++    move-result-wide v0
++
++    const/4 v5, 0x0
++    const-wide/16 v2, 0x0
++    cmp-long v4, v0, v2
++    if-lez v4, :cond_state
++
++    invoke-static {}, Landroid/os/SystemClock;->elapsedRealtime()J
++    move-result-wide v2
++    const-wide/16 v4, 0x3e8
++    div-long/2addr v2, v4
++    sub-long/2addr v2, v0
++
++    const/4 v5, 0x0
++    const-wide/16 v0, 0x5a
++    cmp-long v4, v2, v0
++    if-gez v4, :cond_state
++    const/4 v5, 0x1
++
++    :cond_state
++    sget-boolean v0, Lcom/mnsoft/navi/LeafiaTbtMute;->sMuted:Z
++    if-eq v5, v0, :cond_ret
++    sput-boolean v5, Lcom/mnsoft/navi/LeafiaTbtMute;->sMuted:Z
++    const-string v0, "LeafiaTBT"
++    if-eqz v5, :cond_off
++    const-string v1, "Leafia: phone turn-by-turn active, car navigation turn frames muted"
++    goto :goto_log
++    :cond_off
++    const-string v1, "Leafia: phone turn-by-turn ended, car navigation turn frames back"
++    :goto_log
++    invoke-static {v0, v1}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
++
++    :cond_ret
++    return v5
++    :try_end
++    .catch Ljava/lang/Throwable; {:try_start .. :try_end} :catch
++
++    :catch
++    const/4 v0, 0x0
++    return v0
++.end method
++
++# e/a.sendClusterData: 0 updateTBTInfo, 2 updateTBTSubInfo, 3 updateTBTSubInfo2,
++# 0x64 crossroad name, 0x65 destination name, 0x66 turn list. Not 1 (traps) or 4 (warn distance).
++.method public static dropClusterData(I)Z
++    .locals 1
++
++    if-eqz p0, :cond_turn
++    const/4 v0, 0x2
++    if-eq p0, v0, :cond_turn
++    const/4 v0, 0x3
++    if-eq p0, v0, :cond_turn
++    const/16 v0, 0x64
++    if-eq p0, v0, :cond_turn
++    const/16 v0, 0x65
++    if-eq p0, v0, :cond_turn
++    const/16 v0, 0x66
++    if-eq p0, v0, :cond_turn
++    const/4 v0, 0x0
++    return v0
++
++    :cond_turn
++    invoke-static {}, Lcom/mnsoft/navi/LeafiaTbtMute;->muted()Z
++    move-result v0
++    return v0
++.end method
++
++# message/a.d([BI): 0x4c updateTBTSubInfo2, 0x4d updateTBTSubInfo, 0x4e updateTBTInfo.
++# Not 0x4b (traps) or 0x4f (warn distance).
++.method public static dropFrame(I)Z
++    .locals 1
++
++    const/16 v0, 0x4c
++    if-eq p0, v0, :cond_turn
++    const/16 v0, 0x4d
++    if-eq p0, v0, :cond_turn
++    const/16 v0, 0x4e
++    if-eq p0, v0, :cond_turn
++    const/4 v0, 0x0
++    return v0
++
++    :cond_turn
++    invoke-static {}, Lcom/mnsoft/navi/LeafiaTbtMute;->muted()Z
++    move-result v0
++    return v0
++.end method
++
++# G70 diagnostic: log the navigation's own turn-list frames (sendClusterData type
++# 0x66 -> updateTPTurnListNew) as hex when they change, so the HUD street line can be
++# matched for Android Auto. Logging only: nothing sent changes.
++.method public static logFrame(I[B)V
++    .locals 6
++
++    const/16 v0, 0x66
++    if-ne p0, v0, :cond_ret
++    if-eqz p1, :cond_ret
++
++    :try_start
++    new-instance v1, Ljava/lang/StringBuilder;
++    invoke-direct {v1}, Ljava/lang/StringBuilder;-><init>()V
++    array-length v2, p1
++    const/4 v3, 0x0
++
++    :goto_loop
++    if-ge v3, v2, :cond_done
++    aget-byte v4, p1, v3
++    and-int/lit16 v4, v4, 0xff
++    or-int/lit16 v4, v4, 0x100
++    invoke-static {v4}, Ljava/lang/Integer;->toHexString(I)Ljava/lang/String;
++    move-result-object v5
++    const/4 v4, 0x1
++    invoke-virtual {v5, v4}, Ljava/lang/String;->substring(I)Ljava/lang/String;
++    move-result-object v5
++    invoke-virtual {v1, v5}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++    add-int/lit8 v3, v3, 0x1
++    goto :goto_loop
++
++    :cond_done
++    invoke-virtual {v1}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
++    move-result-object v1
++    sget-object v2, Lcom/mnsoft/navi/LeafiaTbtMute;->sLastFrame:Ljava/lang/String;
++    invoke-virtual {v1, v2}, Ljava/lang/String;->equals(Ljava/lang/Object;)Z
++    move-result v2
++    if-nez v2, :cond_ret
++    sput-object v1, Lcom/mnsoft/navi/LeafiaTbtMute;->sLastFrame:Ljava/lang/String;
++
++    new-instance v3, Ljava/lang/StringBuilder;
++    invoke-direct {v3}, Ljava/lang/StringBuilder;-><init>()V
++    const-string v4, "Leafia: navigation turn list frame "
++    invoke-virtual {v3, v4}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++    invoke-virtual {v3, v1}, Ljava/lang/StringBuilder;->append(Ljava/lang/String;)Ljava/lang/StringBuilder;
++    invoke-virtual {v3}, Ljava/lang/StringBuilder;->toString()Ljava/lang/String;
++    move-result-object v3
++    const-string v2, "LeafiaTBT"
++    invoke-static {v2, v3}, Landroid/util/Log;->i(Ljava/lang/String;Ljava/lang/String;)I
++    :try_end
++    .catch Ljava/lang/Throwable; {:try_start .. :try_end} :cond_ret
++
++    :cond_ret
++    return-void
++.end method
+diff -ruN --strip-trailing-cr -I '^ *#' HKMC_Navi_ExSL.stock/com/mnsoft/navi/e/a.smali HKMC_Navi_ExSL.new/com/mnsoft/navi/e/a.smali
+--- HKMC_Navi_ExSL.stock/com/mnsoft/navi/e/a.smali	2026-11-04 19:08:46.175048199 +0000
++++ HKMC_Navi_ExSL.new/com/mnsoft/navi/e/a.smali	2026-11-04 19:08:47.115409954 +0000
+@@ -5386,6 +5386,19 @@
+ .method public static sendClusterData(I[I[D[Ljava/lang/String;[B)V
+     .registers 18
+ 
++    # G70 diagnostic: log every cluster message the navigation sends (before the mute)
++    invoke-static/range {p0 .. p4}, Lcom/mnsoft/navi/LeafiaNavLog;->logData(I[I[D[Ljava/lang/String;[B)V
++
++    invoke-static {p0}, Lcom/mnsoft/navi/LeafiaTbtMute;->dropClusterData(I)Z
++
++    move-result v1
++
++    if-eqz v1, :cond_leafia_send
++
++    return-void
++
++    :cond_leafia_send
++
+     if-nez p0, :cond_6
+ 
+     invoke-static {p1}, Lcom/mnsoft/navi/e/a;->c([I)V
+diff -ruN --strip-trailing-cr -I '^ *#' HKMC_Navi_ExSL.stock/com/mnsoft/navi/message/a.smali HKMC_Navi_ExSL.new/com/mnsoft/navi/message/a.smali
+--- HKMC_Navi_ExSL.stock/com/mnsoft/navi/message/a.smali	2026-11-04 19:08:45.503248202 +0000
++++ HKMC_Navi_ExSL.new/com/mnsoft/navi/message/a.smali	2026-11-04 19:08:47.297129686 +0000
+@@ -2598,6 +2598,16 @@
+ .method public static d([BI)V
+     .registers 4
+ 
++    invoke-static {p1}, Lcom/mnsoft/navi/LeafiaTbtMute;->dropFrame(I)Z
++
++    move-result v0
++
++    if-eqz v0, :cond_leafia_send
++
++    return-void
++
++    :cond_leafia_send
++
+     invoke-static {}, Lcom/mnsoft/navi/am;->getCurrentContext()Landroid/content/Context;
+ 
+     move-result-object v0
