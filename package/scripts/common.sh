@@ -1,8 +1,8 @@
 #!/system/bin/sh
 # g70.carplay.bt - wireless CarPlay for the Genesis G70 (built on IKFL.USA 251120; any
 # firmware whose stock files match byte for byte),
-# built on HMG Leafia Plus parts. Needs Leafia's wireless.carplay.aa (basic mode)
-# installed first for the wireless feature flags and the hotspot.
+# built on HMG Leafia Plus parts. Standalone: it also sets the wireless projection
+# flags Leafia's wireless.carplay.aa used to (left alone when already in place).
 #
 #   HKMC_DiPO      + LeafiaCpBridge: carries iAP2 between the iPhone's Bluetooth
 #                    link (BTCM SPP) and the iAP2 server; null check in
@@ -18,10 +18,16 @@
 #   libCarPlayCore Wi-Fi sessions (Leafia recipe carplay-core-wifi)
 #   HKMC_Navi_ExSL car navigation skips its turn frames while the phone guides
 #                    (sys.leafia.phonetbt, stamped by DiPO / GPM); traps still pass
+#   cameras        speed / red-light camera alerts on the HUD from the owner's list
+#                    (/data/leafia/cameras.csv, none shipped): GPM matches GPS against it
+#                    (sys.leafia.cam), the car navigation shows it in its trap frames
 #   libautoreceiver_infobank  Android Auto turn-by-turn on the cluster: Leafia's
 #                    projection.tbt library patch ported to this stock library
 #                    (files/libautoreceiver_infobank.tbt.lpd, hash-gated delta)
 #   comp/4_audio   Leafia's wireless CarPlay audio part, unchanged
+#   projection     the wireless CarPlay / Android Auto connectivity features,
+#                    featurexml.cfg's removal of them and of the hotspot commented,
+#                    persist.ium.support=carplay
 #
 # Nothing modified is shipped: the four apps are rebuilt on the head unit from its
 # own stock files (files/<app>.lpd deltas, applied by lpatch only to the exact
@@ -53,13 +59,13 @@ SUM_STOCK_HKMC_Navi_ExSL_odex=5f83f1fbc68ce37168c5179418abc0fe
 # our builds (stock APK + patched classes.dex)
 SUM_NEW_HKMC_DiPO=6922669d1c356cee538651c98772df3d
 SUM_NEW_Iap2ServerApp=406ee0d95345bc90205b259ec2018bf9
-SUM_NEW_HKMC_GPM=645a2bf8d682971cb2159fc240462bb9
-SUM_NEW_HKMC_Navi_ExSL=5c62b556f1fd7f1a837813a40ca2a191
+SUM_NEW_HKMC_GPM=ce84e98b87eed5cc46813b31ac4c7ef4
+SUM_NEW_HKMC_Navi_ExSL=b9c9e7cd477b87cb8750c2e0445120cc
 # earlier builds of this package an install may replace (the stock backup is kept)
 SUM_PREV_HKMC_DiPO="c250f2e3f3d06e2a815a85935e305106 8bd271656e8af7ef61da6d4f33e9d0d1 6b2bdc7eed24629752e61b9a1e0b239c 26f714beedf8224b430a1c1bc2e49c63 947849488fad11450204196aff904b33 57c00b020cb09bfa312250640e4cc9ca 02b779f25634ad18e250de7e716ec3fa dcd52da6ceb2ea135433dec7caa2b88f f45342e682af7c257897f0909378d281 8012b94b4b8a85c6a4939bd0180961bb 96303fd6f75c511e2674cb987c3567c2 ed35c863e4eb0ec8e53934951602fe4c eb4483a40baafc1d81703e7bb837852b bdde5781780f722e79f75be99fda6fd0 0e0501f1859afa6a70dbce24d1104d72 af375d16a5226b4e8ab50fe47d535063"
 SUM_PREV_Iap2ServerApp="57bdeabb2f9cc9708d6bbcf985d2b136"
-SUM_PREV_HKMC_GPM="e01c64fc4e3a36bd341e0fa15faa77fa e131dc97d7f2c0a196ff76f786e9e91e 97531c1fd478ac7f2ff63171c817ae62 ddd5f2da66f1b822c811870f41710091 34176b279b79c992593bd9f5b351d33d d9e7194d1cd528537cd5552be26acd1a 386961ac50478484c57bd0e7507ee4d6 eabbf89a47325a08e705d4f6a8ae298a b31e1be345f7fbf8e51dc8ae665305bb 32821c1e0e9839549407c3cc1131dbac 175aab80f023a5b8bd57ece3ea7ba112 83b3862497b0bc5ed15e67394c28d1b2"
-SUM_PREV_HKMC_Navi_ExSL="a3a3e3aa99e46929becf15065448271f f0ab55cb5869d5210cb7a1b005e06458"
+SUM_PREV_HKMC_GPM="e01c64fc4e3a36bd341e0fa15faa77fa e131dc97d7f2c0a196ff76f786e9e91e 97531c1fd478ac7f2ff63171c817ae62 ddd5f2da66f1b822c811870f41710091 34176b279b79c992593bd9f5b351d33d d9e7194d1cd528537cd5552be26acd1a 386961ac50478484c57bd0e7507ee4d6 eabbf89a47325a08e705d4f6a8ae298a b31e1be345f7fbf8e51dc8ae665305bb 32821c1e0e9839549407c3cc1131dbac 175aab80f023a5b8bd57ece3ea7ba112 83b3862497b0bc5ed15e67394c28d1b2 645a2bf8d682971cb2159fc240462bb9"
+SUM_PREV_HKMC_Navi_ExSL="a3a3e3aa99e46929becf15065448271f f0ab55cb5869d5210cb7a1b005e06458 5c62b556f1fd7f1a837813a40ca2a191"
 
 # Android Auto library (turn-by-turn)
 AA_LIB=/system/lib/libautoreceiver_infobank.so
@@ -157,10 +163,12 @@ check_unit() {
     else
         log "firmware '$_p' (this build was made on $PRODUCT): installing only if every file below matches"
     fi
-    if [ ! -f "$CP_XML" ]; then
-        log "FAIL: wireless CarPlay feature file missing - install HMG Leafia Plus (wireless.carplay.aa) first"
-        return 1
+    if [ -d /data/nemesis/backup/wireless.projection ]; then
+        log "HMG Leafia Plus wireless.projection installed: its wireless flags stay as they are"
     fi
+    for _n in $PROJ_XMLS $HOTSPOT_XMLS; do
+        [ -s "files/permissions/$_n" ] || { log "FAIL: payload files/permissions/$_n missing"; return 1; }
+    done
     for _n in $APPS; do
         [ -s "files/$_n.lpd" ] || { log "FAIL: payload files/$_n.lpd missing"; return 1; }
         if is_stock_app "$_n"; then
@@ -418,6 +426,187 @@ restore_props() {
     # the bridge's own switches
     setprop persist.leafia.g70.cpbridge "" 2>/dev/null
     setprop persist.leafia.g70.cpcomp "" 2>/dev/null
+    return $_rc
+}
+
+
+# ---- wireless projection flags (standalone: what Leafia's wireless.projection did) ----
+# The head unit only offers wireless CarPlay / Android Auto when PackageManager has the two
+# connectivity features, featurexml.cfg does not remove them at boot, and
+# persist.ium.support=carplay. The G70's featurexml.cfg also removes the Wi-Fi hotspot, which
+# both projections run on: that line is commented too, and the Wi-Fi and hotspot features are
+# added when absent (a factory 250818 G70 has no android.hardware.wifi.xml). Each one is checked
+# first: what is already in place (stock, or Leafia installed) is left alone and recorded as
+# such, so uninstall undoes only what this package changed. Same edits as Leafia 1.x's slim
+# wireless.projection.
+PERM_DIR=/system/etc/permissions
+PROJ_XMLS="com.hkmc.software.connectivity.carplay_wireless.xml com.hkmc.software.connectivity.androidauto_wireless.xml"
+# added only when featurexml.cfg removed the hotspot
+HOTSPOT_XMLS="com.hkmc.software.wifihotspot.xml android.hardware.wifi.xml"
+PROJ_DIR=$BACKUP_DIR/projection
+BUILD_PROP=/system/build.prop
+
+proj_featurexml() {
+    local _t _f
+    _t=$(getprop ro.mobis.targetdir 2>/dev/null)
+    [ -n "$_t" ] || return 1
+    _f="$_t/featurexml.cfg"
+    [ -f "$_f" ] || return 1
+    echo "$_f"
+}
+
+# an active (not commented) line that removes a wireless connectivity feature or the hotspot at
+# boot. Shell matching, not grep: the head unit's grep has no \| alternation (a 250818 G70 found
+# no removals that way and the install left featurexml.cfg as it was)
+proj_fx_active() {
+    local _l
+    [ -f "$1" ] || return 1
+    while IFS= read -r _l || [ -n "$_l" ]; do
+        case "$_l" in
+            \#*) ;;
+            *androidauto_wireless.xml*|*carplay_wireless.xml*|*wifihotspot.xml*) return 0 ;;
+        esac
+    done < "$1"
+    return 1
+}
+proj_fx_hotspot() {
+    local _l
+    [ -f "$1" ] || return 1
+    while IFS= read -r _l || [ -n "$_l" ]; do
+        case "$_l" in
+            \#*) ;;
+            *wifihotspot.xml*) return 0 ;;
+        esac
+    done < "$1"
+    return 1
+}
+
+proj_bp_on() { grep -q '^persist\.ium\.support=carplay[[:space:]]*$' "$BUILD_PROP" 2>/dev/null; }
+
+# featurexml.cfg (and the hotspot files it makes necessary) into the snapshot, when it removes
+# the wireless features at boot
+snapshot_proj_fx() {
+    local _x _fx
+    if _fx=$(proj_featurexml) && proj_fx_active "$_fx"; then
+        cp -f "$_fx" "$PROJ_DIR/featurexml.cfg" || return 1
+        cmp "$_fx" "$PROJ_DIR/featurexml.cfg" >/dev/null 2>&1 || return 1
+        echo "$_fx" > "$PROJ_DIR/featurexml.path" || return 1
+        log "backed up $_fx (removes the wireless features at boot)"
+        if proj_fx_hotspot "$_fx"; then
+            for _x in $HOTSPOT_XMLS; do
+                if [ -f "$PERM_DIR/$_x" ]; then
+                    log "$_x: already present - left alone"
+                else
+                    : > "$PROJ_DIR/add.$_x" || return 1
+                    log "$_x: absent - will be added (the hotspot was removed at boot)"
+                fi
+            done
+        fi
+    else
+        log "featurexml.cfg: nothing removes the wireless features - left alone"
+    fi
+}
+
+snapshot_proj() {
+    local _x
+    if [ -s "$PROJ_DIR/saved" ]; then
+        log "snapshot exists for the projection flags - keeping original"
+        # a 250818 install before the featurexml.cfg fix left it removing the features
+        # unrecorded: recorded now, from the file as it still is (stock)
+        [ -s "$PROJ_DIR/featurexml.path" ] || snapshot_proj_fx || return 1
+        return 0
+    fi
+    rm -rf "$PROJ_DIR"; mkdir -p "$PROJ_DIR" || return 1
+    for _x in $PROJ_XMLS; do
+        if [ -f "$PERM_DIR/$_x" ]; then
+            log "$_x: already present - left alone"
+        else
+            : > "$PROJ_DIR/add.$_x" || return 1
+            log "$_x: absent - will be added"
+        fi
+    done
+    snapshot_proj_fx || return 1
+    if proj_bp_on; then
+        log "build.prop persist.ium.support=carplay already - left alone"
+    else
+        cp -f "$BUILD_PROP" "$PROJ_DIR/build.prop" || return 1
+        cmp "$BUILD_PROP" "$PROJ_DIR/build.prop" >/dev/null 2>&1 || return 1
+        log "backed up $BUILD_PROP"
+    fi
+    echo "$(getprop persist.ium.support 2>/dev/null)" > "$PROJ_DIR/ium.prop" || return 1
+    echo 1 > "$PROJ_DIR/saved"
+}
+
+# copy $1 over $2 through a temp file, refusing an empty result
+proj_commit() {
+    [ -s "$1" ] || { log "FAIL: refusing an empty $2"; return 1; }
+    cp -f "$1" "$2" || return 1
+    chmod 644 "$2"; chown_system "$2"
+    rm -f "$1"
+}
+
+apply_proj() {
+    local _x _fx _l _seen _tmp=$PROJ_DIR/rewrite.tmp
+    [ -s "$PROJ_DIR/saved" ] || { log "FAIL: no projection snapshot"; return 1; }
+    for _x in $PROJ_XMLS $HOTSPOT_XMLS; do
+        [ -f "$PROJ_DIR/add.$_x" ] || continue
+        put_file "files/permissions/$_x" "$PERM_DIR/$_x" || { log "FAIL: $PERM_DIR/$_x"; return 1; }
+        log "added $PERM_DIR/$_x"
+    done
+    if [ -s "$PROJ_DIR/featurexml.path" ]; then
+        read -r _fx < "$PROJ_DIR/featurexml.path"
+        : > "$_tmp" || return 1
+        while IFS= read -r _l || [ -n "$_l" ]; do
+            case "$_l" in
+                \#*) echo "$_l" ;;
+                *androidauto_wireless.xml*|*carplay_wireless.xml*|*wifihotspot.xml*) echo "#$_l" ;;
+                *) echo "$_l" ;;
+            esac
+        done < "$_fx" > "$_tmp" || return 1
+        proj_commit "$_tmp" "$_fx" || return 1
+        log "commented the wireless feature and hotspot removals in $_fx"
+    fi
+    if [ -s "$PROJ_DIR/build.prop" ]; then
+        : > "$_tmp" || return 1
+        _seen=0
+        while IFS= read -r _l || [ -n "$_l" ]; do
+            case "$_l" in
+                persist.ium.support=*) [ $_seen = 0 ] && echo "persist.ium.support=carplay"; _seen=1 ;;
+                *) echo "$_l" ;;
+            esac
+        done < "$BUILD_PROP" > "$_tmp" || return 1
+        [ $_seen = 1 ] || echo "persist.ium.support=carplay" >> "$_tmp"
+        proj_commit "$_tmp" "$BUILD_PROP" || return 1
+        log "build.prop: persist.ium.support=carplay"
+    fi
+    setprop persist.ium.support carplay 2>/dev/null || log "WARN: setprop persist.ium.support failed"
+    return 0
+}
+
+restore_proj() {
+    local _x _fx _v _rc=0
+    [ -s "$PROJ_DIR/saved" ] || return 0
+    for _x in $PROJ_XMLS $HOTSPOT_XMLS; do
+        [ -f "$PROJ_DIR/add.$_x" ] || continue
+        rm -f "$PERM_DIR/$_x" || _rc=1
+        log "removed $PERM_DIR/$_x (added by this package)"
+    done
+    if [ -s "$PROJ_DIR/featurexml.path" ]; then
+        read -r _fx < "$PROJ_DIR/featurexml.path"
+        put_file "$PROJ_DIR/featurexml.cfg" "$_fx" || { log "FAIL: restore $_fx"; _rc=1; }
+        log "restored $_fx"
+    fi
+    if [ -s "$PROJ_DIR/build.prop" ]; then
+        put_file "$PROJ_DIR/build.prop" "$BUILD_PROP" || { log "FAIL: restore $BUILD_PROP"; _rc=1; }
+        log "restored $BUILD_PROP"
+        read -r _v < "$PROJ_DIR/ium.prop"
+        if [ -n "$_v" ]; then
+            setprop persist.ium.support "$_v" 2>/dev/null
+        else
+            # an empty setprop would store a persist value over build.prop's
+            rm -f /data/property/persist.ium.support 2>/dev/null
+        fi
+    fi
     return $_rc
 }
 

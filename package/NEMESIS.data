@@ -1,7 +1,7 @@
 [nemesis]
 version=1.0
 id=g70.carplay.bt
-name=G70 Wireless CarPlay (Leafia-based bridge)
+name=G70 Wireless CarPlay / Android Auto bridge
 types=application
 preinstall=scripts/pre.sh
 postinstall=scripts/post.sh

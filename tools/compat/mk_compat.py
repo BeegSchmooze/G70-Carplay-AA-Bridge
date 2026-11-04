@@ -92,10 +92,13 @@ else
 fi
 
 if [ -f "$CP_XML" ]; then
-    say "OK       HMG Leafia Plus wireless.carplay.aa is installed"
+    say "INFO     wireless CarPlay / Android Auto features already on (left as they are)"
 else
-    say "MISSING  HMG Leafia Plus wireless.carplay.aa: install it first (basic mode is enough)"
-    BAD="$BAD leafia"
+    say "INFO     wireless CarPlay / Android Auto features off (the package turns them on)"
+fi
+if [ -d /data/nemesis/backup/wireless.projection ]; then
+    say "INFO     HMG Leafia Plus wireless.carplay.aa is installed: not needed by the bridge"
+    say "         (it can stay; uninstalling it first avoids two packages owning the same settings)"
 fi
 
 say ""
@@ -108,14 +111,10 @@ else
             HKMC_DiPO|Iap2ServerApp) say "  $_b: wireless CarPlay" ;;
             HKMC_GPM|libautoreceiver_infobank.so) say "  $_b: wireless Android Auto fixes and Android Auto turn-by-turn" ;;
             HKMC_Navi_ExSL) say "  $_b: muting the car navigation's turn frames while the phone guides" ;;
-            leafia) say "  install HMG Leafia Plus first, then run this check again" ;;
         esac
     done
-    case "$BAD" in
-        " leafia") ;;
-        *)  say "A port for this firmware is possible: send the project this report and a run of the"
-            say "read-only probe (privately - the probe holds phone names and Bluetooth addresses)." ;;
-    esac
+    say "A port for this firmware is possible: send the project this report and a run of the"
+    say "read-only probe (privately - the probe holds phone names and Bluetooth addresses)."
 fi
 sync
 exit 0

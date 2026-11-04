@@ -15,6 +15,7 @@ restore_apps || _rc=1
 restore_core || _rc=1
 restore_aalib || _rc=1
 restore_props || _rc=1
+restore_proj || _rc=1
 sync
 sys_ro
 apps_release

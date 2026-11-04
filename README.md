@@ -2,18 +2,22 @@
 
 Wireless Android Auto and wireless CarPlay, with turn-by-turn from both on the
 cluster/HUD, for the **2022 Genesis G70** head unit, as a reversible
-[NEMESIS](https://github.com/xwtk/hmg_nemesis) package. It builds on
+[NEMESIS](https://github.com/xwtk/hmg_nemesis) package. It started from
 [HMG Leafia Plus](https://github.com/VysseCodes/HMG-Leafia-Plus), which had no
-patch set for this car's firmware, so every patch here was ported to it.
+patch set for this car's firmware, so every patch here was ported to it. Since
+v1.1 it is **standalone**: HMG Leafia Plus does not need to be installed.
 
 > Unofficial. Not affiliated with Hyundai, Kia, Genesis, Google, Apple, the
 > NEMESIS project or HMG Leafia Plus. You use it at your own risk.
 
-## Status (v1.0)
+## Status (v1.1)
 
-v1.0 ("update 20") completes the CarPlay integration: Apple Maps turn-by-turn and
-the now-playing track reach the cluster and HUD over wireless CarPlay. As since
-v0.96, it installs on any head unit whose stock files match (see
+v1.1 ("update 22") makes the package standalone. It now turns on the wireless
+CarPlay / Android Auto features and the Wi-Fi hotspot itself, which used to need
+HMG Leafia Plus's `wireless.carplay.aa`. It also adds speed and red-light camera
+alerts on the HUD from your own camera list. v1.0 brought Apple Maps
+turn-by-turn and the now-playing track to the cluster and HUD. As since v0.96,
+it installs on any head unit whose stock files match (see
 [Compatibility](#compatibility)).
 
 | Feature | State |
@@ -31,6 +35,8 @@ v0.96, it installs on any head unit whose stock files match (see
 | CarPlay turn-by-turn on the cluster and HUD | Works (new in v1.0): Apple Maps turns with the distance. Tested parked and on short routes; rerouting not yet tested on the car |
 | CarPlay now playing on the cluster and HUD | Works (new in v1.0): track title and changes |
 | CarPlay call state on the cluster | Requested from the iPhone; not yet tested on the car |
+| Speed / red-light camera alerts on the HUD | Works (new in v1.1), from a camera list you supply (see [Camera alerts](#camera-alerts)). The camera icon takes the place of the speed-limit sign, with the distance; the cluster also shows its own "uneven road ahead" notice and chime |
+| Standalone wireless setup (no HMG Leafia Plus) | New in v1.1; tested in the mock head unit on factory files and confirmed on a second G70 |
 
 Joining another Wi-Fi network from the car's settings turns off the hotspot that
 wireless Android Auto and CarPlay use; restart the head unit to get it back.
@@ -45,16 +51,19 @@ Work on the open items continues; see [docs/TECHNICAL.md](docs/TECHNICAL.md).
   install only if every file the package changes is byte-identical. Run the
   compatibility check first (below).
 - NEMESIS 1.15 or newer on the head unit.
-- HMG Leafia Plus **`wireless.carplay.aa`** installed first (basic mode is
-  enough): it provides the wireless feature flags and the hotspot.
 - A FAT32 USB drive.
+
+HMG Leafia Plus is **not** needed. If its `wireless.carplay.aa` is already
+installed, the bridge leaves the settings it made alone and works alongside it.
+To keep things simple, uninstall it first (NEMESIS Manager → Packages) and
+restart the head unit; the bridge then turns everything on itself.
 
 ## Compatibility
 
 `G70-Compat-Check.zip` (in the release, source in `tools/compat/`) is a
 read-only NEMESIS script: unzip it onto the USB drive, plug it in, and it writes
 `G70COMPAT-<n>/report.txt` with one line per file the package changes (MATCH or
-DIFFERENT), whether Leafia is installed, and a result:
+DIFFERENT), whether the wireless features are already on, and a result:
 
 - **COMPATIBLE**: the package will install on your car.
 - **NOT COMPATIBLE YET**: the report lists which files differ and which feature
@@ -68,7 +77,7 @@ and must match the tested build's checksum.
 
 ## Install
 
-1. Download the release zip (`G70-Bridge-v1.0.zip`) and unzip it onto the root
+1. Download the release zip (`G70-Bridge-v1.1.zip`) and unzip it onto the root
    of the USB drive. You should have `NEMESIS.data` and
    `packages/g70.carplay.bt.zip` at the top level. Do not unzip
    `g70.carplay.bt.zip` itself.
@@ -82,7 +91,21 @@ and must match the tested build's checksum.
 ## Uninstall
 
 NEMESIS Manager → Packages → `g70.carplay.bt` → Uninstall, then restart the head
-unit. Every changed file, property and library goes back to stock byte for byte.
+unit. Every changed file, property and library goes back to stock byte for byte,
+including the wireless settings, if the bridge was the one that turned them on.
+
+## Camera alerts
+
+The bridge ships no camera data. Put your own list on the head unit with
+`tools/cameras` (a NEMESIS execute script): copy its two files and your
+`cameras.csv` to the root of a USB drive, plug it in and confirm. It copies the
+list to `/data/leafia/cameras.csv` and writes `G70CAMERAS-<n>/result.txt`. Run it
+with no `cameras.csv` on the drive to remove the list and turn alerts off.
+
+The CSV is `lat,lon,type,speed,heading,f2,category` with a header line (type
+`redlight` = red-light camera, anything else = speed camera; heading 360 = any
+direction; f2 1 = one direction, 2 = both). Alerts start 0.3 mi before a camera
+(0.5 mi from 45 mph) and use the car's own GPS, with or without navigation.
 
 ## How it is built
 
@@ -98,8 +121,9 @@ diffs against the stock apps.
 |---|---|
 | `HKMC_DiPO` (CarPlay) | Bluetooth→iAP2 bridge, starts the CarPlay engine for wireless, audio source and focus, iAP2 notifications let through for wireless sessions, iPhone in the device list, iAP2 handover into the CarPlay session, now playing and call state requested over wireless, drawn turns; stock bugs fixed: iAP send length, maneuver index |
 | `Iap2ServerApp` | Starts/ends the iAP2 session on the Bluetooth transport; advertises route guidance |
-| `HKMC_GPM` (Android Auto) | Stuck-session, USB-drive and same-phone reconnect fixes; turn-by-turn sent straight to the cluster (port of HMG-API's AaTurns) with drawn turns, street name, lanes, smooth count-down |
-| `HKMC_Navi_ExSL` (car navigation) | Skips its turn frames while the phone guides; logs what it sends to the cluster (diagnostics) |
+| `HKMC_GPM` (Android Auto) | Stuck-session, USB-drive and same-phone reconnect fixes; turn-by-turn sent straight to the cluster (port of HMG-API's AaTurns) with drawn turns, street name, lanes, smooth count-down; camera list matched against GPS |
+| `HKMC_Navi_ExSL` (car navigation) | Skips its turn frames while the phone guides; shows camera alerts in its speed-limit frames; logs what it sends to the cluster (diagnostics) |
+| Wireless settings | Wireless CarPlay / Android Auto and Wi-Fi feature files added, `featurexml.cfg`'s removal of them and of the hotspot commented out, `persist.ium.support=carplay`; each left alone when already in place |
 | `libautoreceiver_infobank.so` | Leafia/NEMESIS `projection.tbt` navigation bridge, ported to this car's library build |
 | `libCarPlayCore.so` | Leafia recipe: accept Wi-Fi CarPlay sessions |
 | Leafia audio part | Unchanged (`package/comp/4_audio`) |
@@ -115,6 +139,7 @@ tools/aa-lib-port library port scripts (see docs/TECHNICAL.md)
 tools/checks/     reference/register checkers and the mock head-unit tests
 tools/probe/      read-only diagnostic probe (NEMESIS execute script)
 tools/compat/     read-only compatibility check (generated from the installer's checksums)
+tools/cameras/    puts your camera list on the head unit (no camera data included)
 docs/             technical notes
 ```
 

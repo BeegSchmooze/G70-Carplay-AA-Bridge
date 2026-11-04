@@ -25,11 +25,14 @@
 #                           the Wi-Fi client (implies MOCK_USB_DESCRIPTOR=1)
 #   MOCK_NO_WIFI=1          a unit whose Wi-Fi chip never responds (no wlan0, driver
 #                           gives up): the install must be refused
+#   MOCK_PKG=<id>           the package inside the zip (default g70.carplay.bt; g70.tbt for
+#                           the turn-by-turn-only package)
+#   MOCK_BRIDGE_INSTALLED=1 the full bridge's stock backup present (g70.carplay.bt installed)
 #
 # Needs: qemu-arm-static (runs the ARM lpatch), unzip, md5sum.
 set -e
 if [ $# -ne 4 ] || [ "$1" = -h ] || [ "$1" = --help ]; then
-    sed -n '2,24p' "$0" | sed 's/^# \{0,1\}//'
+    sed -n '2,29p' "$0" | sed 's/^# \{0,1\}//'
     exit 2
 fi
 for t in qemu-arm-static unzip md5sum; do
@@ -37,6 +40,7 @@ for t in qemu-arm-static unzip md5sum; do
 done
 ZIP=$(cd "$(dirname "$1")" && pwd)/$(basename "$1"); PROD=$2; TD=$3; SRC=$4
 SH=${MOCK_SH:-/bin/sh}
+PKGID=${MOCK_PKG:-g70.carplay.bt}
 X=$(mktemp -d "${TMPDIR:-/tmp}/mock-hu.XXXX"); R=$X/root
 mkdir -p "$R/data/nemesis" "$R/data/dalvik-cache" "$R/storage/usb0" "$R/sys/class/net" "$X/stub" "$X/pkg"
 if [ "$MOCK_NO_WIFI" = 1 ]; then
@@ -105,10 +109,19 @@ if [ "$MOCK_ANDROID_DOWN" = 1 ]; then
     cp "$X/stub/am" "$X/stub/pm"
 fi
 printf '#!/bin/sh\nexec qemu-arm-static %s/pkg/tools/lpatch "$@"\n' "$X" > "$X/stub/lpatch_q"
+# grep as on the head unit: no \| alternation (GNU only) - such a pattern never matches there,
+# so here it never matches either and is recorded (a 250818 install skipped featurexml.cfg so)
+cat > "$X/stub/grep" <<E
+#!/bin/sh
+for _a in "\$@"; do
+    case "\$_a" in *'\\|'*) echo "\$_a" >> $X/gnu-grep; exit 1 ;; esac
+done
+exec $(command -v grep) "\$@"
+E
 chmod 755 "$X"/stub/*
 
 # unpack the package and point its scripts at the sandbox instead of the real paths
-(cd "$X" && unzip -q "$ZIP" packages/g70.carplay.bt.zip && unzip -q packages/g70.carplay.bt.zip -d pkg)
+(cd "$X" && unzip -q "$ZIP" packages/$PKGID.zip && unzip -q packages/$PKGID.zip -d pkg)
 find "$X/pkg" -name '*.sh' | while read -r f; do
     sed -i -e "1s|^#!.*|#!/bin/sh|" -e "s|/system/|$R/system/|g" -e "s|/data/|$R/data/|g" \
         -e "s|/storage/|$R/storage/|g" -e "s|/sys/class/|$R/sys/class/|g" -e "s|/mnt/media_rw/|$R/mnt/media_rw/|g" \
@@ -117,11 +130,12 @@ find "$X/pkg" -name '*.sh' | while read -r f; do
         -e "s|^\(export PATH=.*\)$|\1:/usr/bin:/bin|" "$f"
 done
 [ "$MOCK_WIFI_CLIENT" = 1 ] && MOCK_USB_DESCRIPTOR=1 && : > "$R/storage/usb0/LEAFIA-WIFI-CLIENT"
-[ "$MOCK_USB_DESCRIPTOR" = 1 ] && printf '[nemesis]\nversion=1.0\ntype=install\npath=packages/g70.carplay.bt.zip\n' > "$R/storage/usb0/NEMESIS.data"
+[ "$MOCK_USB_DESCRIPTOR" = 1 ] && printf '[nemesis]\nversion=1.0\ntype=install\npath=packages/%s.zip\n' "$PKGID" > "$R/storage/usb0/NEMESIS.data"
 
 (cd "$R" && find system -type f -exec md5sum {} \; | sort -k2) > "$X/before.md5"
+[ "$MOCK_BRIDGE_INSTALLED" = 1 ] && mkdir -p "$R/data/nemesis/backup/g70.carplay.bt"
 if [ "$MOCK_LEFTOVER_STOPPED" = 1 ]; then
-    echo "com.daudio.app.dipo com.tcc.iap2server" > "$R/data/nemesis/g70.carplay.bt.stopped"
+    echo "com.daudio.app.dipo com.tcc.iap2server" > "$R/data/nemesis/$PKGID.stopped"
     : > "$X/pm_disabled_com.daudio.app.dipo"; : > "$X/pm_disabled_com.tcc.iap2server"
 fi
 stopped_left() { ls "$X" | grep '^pm_disabled_' | sed 's/^pm_disabled_//' | tr '\n' ' '; }
@@ -165,6 +179,9 @@ if "$SH" scripts/pre.sh > "$X/pre.log" 2>&1; then
     fi
 else
     echo "PREINSTALL REFUSED"; grep -h -E 'FAIL|basic mode' "$X/pre.log" | head -5; ok=0
+fi
+if [ -s "$X/gnu-grep" ]; then
+    echo "FAIL: grep with \\| (the head unit's grep has none):"; sort -u "$X/gnu-grep" | head -5; ok=0
 fi
 echo "shell $SH, nemesis ${MOCK_NEMESIS:-before 1.15}, android $([ "$MOCK_ANDROID_DOWN" = 1 ] && echo down || echo up)"
 echo "sandbox (logs: pre.log post.log preun.log): $X"

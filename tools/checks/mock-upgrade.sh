@@ -105,6 +105,14 @@ if [ "$MOCK_ANDROID_DOWN" = 1 ]; then
     cp "$X/stub/am" "$X/stub/pm"
 fi
 printf '#!/bin/sh\nexec qemu-arm-static %s/pkg/tools/lpatch "$@"\n' "$X" > "$X/stub/lpatch_q"
+# grep as on the head unit: no \| alternation (see mock-test.sh)
+cat > "$X/stub/grep" <<E
+#!/bin/sh
+for _a in "\$@"; do
+    case "\$_a" in *'\\|'*) echo "\$_a" >> $X/gnu-grep; exit 1 ;; esac
+done
+exec $(command -v grep) "\$@"
+E
 chmod 755 "$X"/stub/*
 
 # unpack the package and point its scripts at the sandbox instead of the real paths
@@ -131,6 +139,8 @@ export LPATCH="$X/stub/lpatch_q"
 # the earlier build first, as it is on the car
 (cd "$X/pkg-old" && "$SH" scripts/pre.sh > "$X/old-pre.log" 2>&1 && "$SH" scripts/post.sh > "$X/old-post.log" 2>&1) || true
 grep -q 'all parts installed' "$X/old-post.log" && echo "OLD BUILD INSTALLED" || { echo "OLD BUILD INSTALL FAILED"; exit 1; }
+# the earlier build's own \| greps are what it did on the car; only the new build's count
+rm -f "$X/gnu-grep"
 cd "$X/pkg"
 ok=1
 if "$SH" scripts/pre.sh > "$X/pre.log" 2>&1; then
@@ -169,6 +179,9 @@ if "$SH" scripts/pre.sh > "$X/pre.log" 2>&1; then
     fi
 else
     echo "PREINSTALL REFUSED"; grep -h -E 'FAIL|basic mode' "$X/pre.log" | head -5; ok=0
+fi
+if [ -s "$X/gnu-grep" ]; then
+    echo "FAIL: grep with \\| (the head unit's grep has none):"; sort -u "$X/gnu-grep" | head -5; ok=0
 fi
 echo "shell $SH, nemesis ${MOCK_NEMESIS:-before 1.15}, android $([ "$MOCK_ANDROID_DOWN" = 1 ] && echo down || echo up)"
 echo "sandbox (logs: pre.log post.log preun.log): $X"

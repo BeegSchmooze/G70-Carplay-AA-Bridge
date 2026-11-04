@@ -12,6 +12,7 @@ undo() {
     restore_core
     restore_aalib
     restore_props
+    restore_proj
     sync
     sys_ro
     apps_release
@@ -25,6 +26,7 @@ snapshot_props || undo "prop snapshot"
 snapshot_apps || undo "app snapshot"
 snapshot_core || undo "libCarPlayCore snapshot"
 snapshot_aalib || undo "Android Auto library snapshot"
+snapshot_proj || undo "projection flags snapshot"
 build_apps || undo "rebuilding the apps from the stock files"
 sys_rw || undo "remount /system rw"
 apply_apps || undo "app install"
@@ -32,6 +34,7 @@ remove_build_dir
 apply_core || undo "libCarPlayCore patch"
 apply_aalib || undo "Android Auto library patch"
 apply_props || undo "props"
+apply_proj || undo "projection flags"
 run_audio post || undo "audio part"
 sync
 sys_ro

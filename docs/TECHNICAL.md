@@ -145,9 +145,57 @@ wireless session; v1.0 fixes all of them (`LeafiaCpHandover`, `hooks16_dipo.py`,
   (in order), instead of DiPO's thread-per-message send, which could reorder
   messages.
 
+## v1.1 (update 22): standalone, camera alerts
+
+### Wireless settings (no HMG Leafia Plus)
+
+The head unit offers wireless CarPlay / Android Auto only when PackageManager has
+the two connectivity features, `featurexml.cfg` (in `ro.mobis.targetdir`) doesn't
+remove them at boot, and `persist.ium.support=carplay`. A factory G70's
+`featurexml.cfg` also removes `com.hkmc.software.wifihotspot.xml`, the hotspot
+both projections run on, and some units have no `android.hardware.wifi.xml`.
+The installer (the projection part of `scripts/common.sh`) does what Leafia
+1.x's slim `wireless.projection` did:
+
+- adds the carplay_wireless / androidauto_wireless feature files when absent;
+- comments out `featurexml.cfg`'s removal lines (both wireless features and the
+  hotspot) and, when the hotspot was removed, adds the hotspot / Wi-Fi feature
+  files that are missing;
+- sets `persist.ium.support=carplay` in `build.prop` when it isn't there.
+
+Each item is checked first and recorded (`add.<file>` markers, backups of
+`featurexml.cfg` and `build.prop`); what is already in place (stock, or
+Leafia's) is left alone, so uninstall undoes only what the bridge changed.
+
+The head unit's `grep` has no `\|` alternation: such a pattern never matches,
+which made a first standalone build miss the removal lines on a factory unit.
+The `featurexml.cfg` checks use shell `case` matching. The mock head unit
+(`tools/checks/mock-test.sh`, `mock-upgrade.sh`) stubs `grep` the same way and
+fails any package script that uses `\|`. A later install over a build that
+recorded nothing for `featurexml.cfg` records and patches it then.
+
+### Camera alerts
+
+- GPM (system uid, has GPS) loads `/data/leafia/cameras.csv` (`LeafiaCamDb`:
+  grid index, Uniden direction rules), takes GPS every second (`LeafiaCam`,
+  started from `GalReceiverService.onCreate`) and publishes the camera ahead as
+  `sys.leafia.cam = kind,whole,tenths,unit` or `0`. The car navigation has no
+  location permission and can't set `sys.*` properties, so it only reads it.
+- The HUD draws an icon only for the trap frame's non-speed code, and it
+  replaces the speed-limit sign: 1 = red-light camera. The speed / mobile /
+  red-line fields, the over-speed alarm and the road-event frame draw nothing.
+  `LeafiaNavCam` (first in the car navigation's `sendClusterData`) overlays the
+  last trap frame with non-speed 1 and alarm 1 (speed camera) or 3 (red-light),
+  replaces the distance frame with the camera distance, and polls every
+  500 ms, resending when the camera or distance changes and every 5 s (trap
+  frames are otherwise sent only when the limit changes). Hooks: `src/hooks/hooks21_cam.py`.
+- Non-speed 1 also makes the cluster show "uneven road ahead" with a chime.
+
 ## Open items
 
 - **CarPlay**: rerouting and call state not yet tested on the car.
+- **Camera icon above the limit sign**: no trap-frame field found that draws
+  one there (HUD tests 5 and 6); the icon replaces the sign.
 - **Side roads for Android Auto**: the phone doesn't send them; match the car's
   ADASIS map stream to the route.
 - The angle sign for CarPlay side roads (`persist.leafia.g70.cpangle`).
