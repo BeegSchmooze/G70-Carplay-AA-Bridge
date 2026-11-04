@@ -16,11 +16,14 @@ v1.2 is **one package for several firmwares**. It carries a separate build for
 each supported G70 firmware and uses the one made for exactly your head unit's
 files (see [Compatibility](#compatibility)):
 
-| Firmware | Car | |
-|---|---|---|
-| `IKFL.USA.0000.V014.011.251120` | 2022 G70 | the original build, tested on the car |
-| `IKFL.USA.0000.V014.010.250818` | 2023 G70 | port, confirmed working on a 2023 G70 |
-| `IKFL.USA.0000.V015.012.260507` | 2026.07 update | port, new in v1.2, mock-tested |
+| Firmware | Status |
+|---|---|
+| `IKFL.USA.0000.V014.011.251120` | the original build, tested on a car |
+| `IKFL.USA.0000.V014.010.250818` | port, tested on a car |
+| `IKFL.USA.0000.V015.012.260507` (2026.07 update) | port, new in v1.2, tested on a car |
+
+What matters is the firmware, not the model year: any head unit whose files match one of
+these builds byte for byte can install it.
 
 Speed-camera alerts are no longer part of the bridge: they will come back as a
 separate add-on package, so only people who want them install them. v1.1 made
