@@ -27,6 +27,9 @@ From HMG Leafia Plus (https://github.com/VysseCodes/HMG-Leafia-Plus), GPL-3.0:
 - `lpatch` (`package/tools/lpatch`) and the `lpatch.sh` helpers
 - the recipes in `package/recipes/`
 - the wireless CarPlay audio part (`package/comp/4_audio`, including `libev6aac.so`)
+- the feature files in `package/files/permissions/` and the wireless settings
+  recipe (the projection part of `package/scripts/common.sh`), from its
+  `wireless.projection`
 - the CarPlay Bluetooth bridge design, the `mkdelta` delta format and many of
   the techniques used here (gate patches, cluster muting, trap-frame handling)
 
