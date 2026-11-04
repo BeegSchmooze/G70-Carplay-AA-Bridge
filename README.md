@@ -1,4 +1,4 @@
-# Leafia Plus — Genesis G70 Bridge
+# G70 CarPlay / AA Bridge
 
 Wireless Android Auto and wireless CarPlay, with turn-by-turn from both on the
 cluster/HUD, for the **2022 Genesis G70** head unit, as a reversible
